@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1 {
+  @apply text-xl;
+}
+
+input {
+  @apply bg-gray-200 border border-gray-400 rounded m-2;
+}
+
+button {
+  @apply rounded shadow m-2 bg-gray-100;
+}

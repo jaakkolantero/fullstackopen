@@ -1,0 +1,36 @@
+{
+  "name": "puhelinluettelo",
+  "version": 2,
+  "public": true,
+  "builds": [
+    {
+      "src": "puhelinluettelo_frontend/package.json",
+      "use": "@now/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    },
+    {
+      "src": "puhelinluettelo/index.js",
+      "use": "@now/node-server"
+    }
+  ],
+  "routes": [
+    {
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept"
+      },
+      "src": "/api/.*",
+      "dest": "/puhelinluettelo/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/puhelinluettelo_frontend/$1",
+      "headers": {
+        "x-request-path": "$1"
+      }
+    }
+  ]
+}
