@@ -49,15 +49,19 @@ app.use(
 );
 
 app.get("/api/persons", (request, response) => {
-  Entry.find({}).then(entries => {
-    response.json(entries);
-  });
+  Entry.find({})
+    .then(entries => {
+      response.json(entries);
+    })
+    .catch(error => next(error));
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find(person => person.id === id);
-  response.json(person);
+app.get("/api/persons/:id", async (request, response) => {
+  const { id } = request.params;
+  const entries = await Entry.find({});
+  const entriesJSON = entries.map(entry => entry.toJSON());
+  const sameIdEntries = entriesJSON.filter(entry => entry.id === id);
+  response.json(sameIdEntries);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -70,12 +74,10 @@ app.delete("/api/persons/:id", (request, response) => {
   console.log("deleted id:", request.params.id);
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", async (request, response) => {
   const { name, number } = request.body;
-  const sameNameCount = persons.filter(person => person.name === name).length;
-  Entry.find({}).then(entries => {
-    console.log("entries", entries);
-  });
+  const entries = await Entry.find({});
+  const sameNameCount = entries.filter(entry => entry.name === name).length;
 
   if (!number) {
     return response.status(400).json({
@@ -100,16 +102,37 @@ app.post("/api/persons", (request, response) => {
     number: number
   });
 
-  entry.save().then(savedEntry => {
-    response.json(savedEntry.toJSON());
-  });
+  entry
+    .save()
+    .then(savedEntry => {
+      response.json(savedEntry.toJSON());
+    })
+    .catch(error => next(error));
 });
 
-app.get("/api/info", (request, response) => {
+app.put("/api/persons/:id", (request, response) => {
+  const { name, number } = request.body;
+  const { id } = request.params;
+
+  Entry.findByIdAndUpdate(
+    id,
+    {
+      name,
+      number
+    },
+    { new: true }
+  )
+    .then(updatedEntry => {
+      response.json(updatedEntry.toJSON());
+    })
+    .catch(error => next(error));
+});
+
+app.get("/api/info", async (request, response) => {
+  const entries = await Entry.find({});
+  const entryCount = entries.length;
   response.send(
-    `<div>Phonebook has info for ${
-      persons.length
-    } people</div><div>${new Date()}</div>`
+    `<div>Phonebook has info about ${entryCount} people</div><div>${new Date()}</div>`
   );
 });
 
