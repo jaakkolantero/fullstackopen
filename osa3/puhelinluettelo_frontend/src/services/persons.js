@@ -9,18 +9,25 @@ const getAll = () => {
   return request.then(response => response.data);
 };
 
-const create = newObject => {
-  const request = axios.post(baseUrl, newObject);
-  return request.then(response => response.data);
+const create = async newObject => {
+  return axios
+    .post(baseUrl, newObject)
+    .then(response => {
+      return response.data;
+    })
+    .catch(error => {
+      throw new Error(error.response.data.error);
+    });
 };
 
 const update = newObject => {
-  const request = axios.put(`${baseUrl}/${newObject.id}`, newObject);
-  return request
-    .then(response => response.data)
+  return axios
+    .put(`${baseUrl}/${newObject.id}`, newObject)
+    .then(response => {
+      return response.data;
+    })
     .catch(error => {
-      console.log("error", error);
-      return error;
+      throw new Error(error.response.data.error);
     });
 };
 

@@ -48,7 +48,7 @@ app.use(
   morgan(":method :status :res[content-length] - :response-time ms :post")
 );
 
-app.get("/api/persons", (request, response) => {
+app.get("/api/persons", (request, response, next) => {
   Entry.find({})
     .then(entries => {
       response.json(entries);
@@ -56,7 +56,7 @@ app.get("/api/persons", (request, response) => {
     .catch(error => next(error));
 });
 
-app.get("/api/persons/:id", async (request, response) => {
+app.get("/api/persons/:id", async (request, response, next) => {
   const { id } = request.params;
   const entries = await Entry.find({});
   const entriesJSON = entries.map(entry => entry.toJSON());
@@ -74,32 +74,12 @@ app.delete("/api/persons/:id", (request, response) => {
   console.log("deleted id:", request.params.id);
 });
 
-app.post("/api/persons", async (request, response) => {
+app.post("/api/persons", async (request, response, next) => {
   const { name, number } = request.body;
-  const entries = await Entry.find({});
-  const sameNameCount = entries.filter(entry => entry.name === name).length;
-
-  if (!number) {
-    return response.status(400).json({
-      error: "number missing"
-    });
-  }
-
-  if (!name) {
-    return response.status(400).json({
-      error: "name missing"
-    });
-  }
-
-  if (sameNameCount) {
-    return response.status(400).json({
-      error: "name must be unique"
-    });
-  }
 
   const entry = new Entry({
-    name: name,
-    number: number
+    name,
+    number
   });
 
   entry
@@ -110,20 +90,21 @@ app.post("/api/persons", async (request, response) => {
     .catch(error => next(error));
 });
 
-app.put("/api/persons/:id", (request, response) => {
+app.put("/api/persons/:id", async (request, response, next) => {
   const { name, number } = request.body;
   const { id } = request.params;
 
-  Entry.findByIdAndUpdate(
-    id,
-    {
-      name,
-      number
-    },
-    { new: true }
-  )
+  Entry.findByIdAndUpdate(id, { name, number }, { new: true })
     .then(updatedEntry => {
-      response.json(updatedEntry.toJSON());
+      if (updatedEntry) {
+        response.json(updatedEntry.toJSON());
+      } else {
+        next({
+          name: "ValidationError",
+          message: "Entry not found",
+          status: 400
+        });
+      }
     })
     .catch(error => next(error));
 });
@@ -137,10 +118,10 @@ app.get("/api/info", async (request, response) => {
 });
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
-
   if (error.name === "CastError" && error.kind == "ObjectId") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
   }
 
   next(error);

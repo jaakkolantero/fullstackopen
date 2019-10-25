@@ -43,9 +43,23 @@ const App = () => {
     if (sameName === undefined) {
       personsService
         .create({ name: newName, number: newNumber })
-        .then(addedPerson => setPersons(persons.concat(addedPerson)));
-      setNotification({ negative: false, message: "Person created." });
-      setDisplay(true);
+        .then(addedPerson => {
+          setPersons(persons.concat(addedPerson));
+          setNotification({
+            negative: false,
+            message: "Person created."
+          });
+          setDisplay(true);
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch(error => {
+          setNotification({
+            negative: true,
+            message: error.message
+          });
+          setDisplay(true);
+        });
     } else {
       if (window.confirm(`${newName} already exists. Update number?`)) {
         personsService
@@ -58,20 +72,21 @@ const App = () => {
                 )
               );
               setNotification({ negative: false, message: "Person updated." });
-            } else {
-              setNotification({
-                negative: true,
-                message: `${sameName.name} not found from server!`
-              });
-              setPersons(persons.filter(person => person.id !== sameName.id));
             }
+          })
+          .catch(error => {
+            setNotification({
+              negative: true,
+              message: error.message
+            });
+            setPersons(persons.filter(person => person.id !== sameName.id));
           });
 
         setDisplay(true);
+        setNewName("");
+        setNewNumber("");
       }
     }
-    setNewName("");
-    setNewNumber("");
   };
 
   const handleDelete = personToDelete => {
