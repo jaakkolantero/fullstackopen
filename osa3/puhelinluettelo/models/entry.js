@@ -13,7 +13,7 @@ mongoose
 
 const entrySchema = new mongoose.Schema({
   name: String,
-  phoneNumber: String
+  number: String
 });
 
 entrySchema.set("toJSON", {

@@ -61,16 +61,21 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  console.log("id", request.params.id);
-  const id = Number(request.params.id);
-  persons = persons.filter(person => person.id !== id);
+  Entry.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end();
+    })
+    .catch(error => next(error));
 
-  response.status(204).end();
+  console.log("deleted id:", request.params.id);
 });
 
 app.post("/api/persons", (request, response) => {
   const { name, number } = request.body;
   const sameNameCount = persons.filter(person => person.name === name).length;
+  Entry.find({}).then(entries => {
+    console.log("entries", entries);
+  });
 
   if (!number) {
     return response.status(400).json({
@@ -90,15 +95,14 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const person = {
-    name,
-    number,
-    id: getRandomInt(9001)
-  };
+  const entry = new Entry({
+    name: name,
+    number: number
+  });
 
-  persons = persons.concat(person);
-
-  response.json(person);
+  entry.save().then(savedEntry => {
+    response.json(savedEntry.toJSON());
+  });
 });
 
 app.get("/api/info", (request, response) => {
@@ -108,6 +112,18 @@ app.get("/api/info", (request, response) => {
     } people</div><div>${new Date()}</div>`
   );
 });
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError" && error.kind == "ObjectId") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 //module.exports = app;
 
