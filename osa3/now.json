@@ -2,6 +2,9 @@
   "name": "puhelinluettelo",
   "version": 2,
   "public": true,
+  "env": {
+    "MONGODB_URI": "@mongodb-uri"
+  },
   "builds": [
     {
       "src": "puhelinluettelo_frontend/package.json",
