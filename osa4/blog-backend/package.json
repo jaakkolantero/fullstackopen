@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --verbose",
     "watch-test": "npm run test -- --watch",
     "start": "node index.js",
     "watch": "nodemon index.js"
