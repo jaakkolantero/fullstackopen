@@ -132,7 +132,7 @@ describe("most blogs", () => {
     }
   ];
 
-  test("of empty list is zero", () => {
+  test("of empty list is undefined", () => {
     const result = listUtils.mostBlogs([]);
     expect(result).toStrictEqual(undefined);
   });
@@ -147,5 +147,55 @@ describe("most blogs", () => {
   test("return one favorite blog correctly", () => {
     const result = listUtils.mostBlogs(listWithMultipleBlogs);
     expect(result).toStrictEqual({ author: "Tero Jaakkola", blogs: 2 });
+  });
+});
+
+describe("most likes", () => {
+  const listWithMultipleMostLikes = [
+    {
+      title: "Hello world",
+      author: "Tero Jaakkola",
+      url: "tero.jaakko.la",
+      likes: 5,
+      id: "5db5e743f7f98f0ecc2ee7df"
+    },
+    {
+      title: "Hello world2",
+      author: "Tero Jaakkola",
+      url: "tero.jaakko.la",
+      likes: 5,
+      id: "5db5f13bed5ab314788b507c"
+    },
+    {
+      title: "Hello world3",
+      author: "Dan Abramov",
+      url: "tero.jaakko.la",
+      likes: 5,
+      id: "5db69eef47740844f87bec37"
+    },
+    {
+      title: "Hello world3",
+      author: "Dan Abramov",
+      url: "tero.jaakko.la",
+      likes: 5,
+      id: "5db69eef47740844f87bec37"
+    }
+  ];
+
+  test("of empty list is undefined", () => {
+    const result = listUtils.mostLikes([]);
+    expect(result).toStrictEqual(undefined);
+  });
+  test("when list has only one blog, equals the likes of that", () => {
+    const result = listUtils.mostLikes(listWithOneBlog);
+    expect(result).toStrictEqual({ author: "Tero Jaakkola", likes: 1 });
+  });
+  test("return first one to get most likes", () => {
+    const result = listUtils.mostLikes(listWithMultipleMostLikes);
+    expect(result).toStrictEqual({ author: "Tero Jaakkola", likes: 10 });
+  });
+  test("return most likes", () => {
+    const result = listUtils.mostLikes(listWithMultipleBlogs);
+    expect(result).toStrictEqual({ author: "Tero Jaakkola", likes: 7 });
   });
 });
