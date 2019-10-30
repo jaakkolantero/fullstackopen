@@ -4,7 +4,7 @@ const User = require("../models/user");
 const { withCatch } = require("../utils/withCatch");
 
 usersRouter.get("/", async (request, response) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate("blogs");
   return response.json(users.map(user => user.toJSON()));
 });
 
@@ -24,7 +24,8 @@ usersRouter.post("/", async (request, response) => {
   const user = new User({
     username,
     name,
-    password: passwordHash
+    password: passwordHash,
+    blogs: ["5db9e07683e07e3c7c9e1339", "5db9e07a83e07e3c7c9e133a"]
   });
 
   const [saveUserError, savedUser] = await withCatch(user.save());

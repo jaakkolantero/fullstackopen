@@ -7,14 +7,24 @@ const initialBlogs = [
     author: "Tero Jaakkola",
     url: "tero.jaakko.la",
     likes: 0,
-    id: "5db5e743f7f98f0ecc2ee7df"
+    id: "5db5e743f7f98f0ecc2ee7df",
+    user: {
+      username: "test1234",
+      name: "Kim Dotcom",
+      id: "5db990414f4f6f23a0343105"
+    }
   },
   {
     title: "Hello world2",
     author: "Tero Jaakkola",
     url: "tero.jaakko.la",
     likes: 2,
-    id: "5db5f13bed5ab314788b507c"
+    id: "5db5f13bed5ab314788b507c",
+    user: {
+      username: "test12345678",
+      name: "Kim Dotcom",
+      id: "5db9d898fccdf936047098e1"
+    }
   }
 ];
 

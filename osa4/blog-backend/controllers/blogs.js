@@ -3,14 +3,15 @@ const Blog = require("../models/blog");
 const { withCatch } = require("../utils/withCatch");
 
 blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog.find({}).populate("user");
   return response.json(blogs.map(blog => blog.toJSON()));
 });
 
 blogsRouter.post("/", async (request, response) => {
   const bodyWithLikes =
     "likes" in request.body ? request.body : { ...request.body, likes: 0 };
-  const blog = new Blog(bodyWithLikes);
+  const bodyWithUser = { ...bodyWithLikes, user: "5db990414f4f6f23a0343105" };
+  const blog = new Blog(bodyWithUser);
 
   const [error, addedBlog] = await withCatch(blog.save());
   if (error) {
