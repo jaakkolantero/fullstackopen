@@ -78,6 +78,16 @@ describe("POST /api/blogs", () => {
     const newBlogs = await blogsInDb();
     expect(newBlogs[newBlogs.length - 1].likes).toBe(0);
   });
+  test("title and url required", async () => {
+    const newBlog = {
+      author: "Tero Jaakkola"
+    };
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .set("Accept", "application/json")
+      .expect(400);
+  });
 });
 
 afterAll(() => {
