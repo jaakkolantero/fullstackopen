@@ -5,18 +5,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
     "watch-test": "npm run test -- --watch",
-    "start": "node index.js",
-    "watch": "nodemon index.js"
+    "start": "cross-env NODE_ENV=production node index.js",
+    "watch": "cross-env NODE_ENV=development nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^6.0.3",
     "eslint": "^6.6.0",
     "eslint-plugin-node": "^10.0.0",
     "jest": "^24.9.0",
-    "nodemon": "^1.19.4"
+    "nodemon": "^1.19.4",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
