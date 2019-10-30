@@ -20,4 +20,15 @@ blogsRouter.post("/", async (request, response) => {
   }
 });
 
+blogsRouter.delete("/:id", async (request, response) => {
+  const [error, removedBlog] = await withCatch(
+    Blog.findByIdAndRemove(request.params.id)
+  );
+  if (error) {
+    response.status(400).send({ error: error.message });
+  } else {
+    response.status(204).end();
+  }
+});
+
 module.exports = blogsRouter;
