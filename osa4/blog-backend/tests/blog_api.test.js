@@ -63,6 +63,21 @@ describe("POST /api/blogs", () => {
     const newBlogs = await blogsInDb();
     expect(newBlogs[newBlogs.length - 1]).toMatchObject(newBlog);
   });
+  test("likes set to 0 if not defined", async () => {
+    const newBlog = {
+      title: "Hello world3",
+      author: "Tero Jaakkola",
+      url: "tero.jaakko.la"
+    };
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(201);
+    const newBlogs = await blogsInDb();
+    expect(newBlogs[newBlogs.length - 1].likes).toBe(0);
+  });
 });
 
 afterAll(() => {
