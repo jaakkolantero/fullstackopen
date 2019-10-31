@@ -1,4 +1,5 @@
 var morgan = require("morgan");
+const { parseToken } = require("./parseToken");
 
 const requestLogger = morgan(
   ":method :status :res[content-length] - :response-time ms"
@@ -20,8 +21,14 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
+const getTokenFrom = (request, response, next) => {
+  request.token = parseToken(request.header("authorization"));
+  next();
+};
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  getTokenFrom
 };
