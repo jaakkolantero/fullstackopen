@@ -44,6 +44,7 @@ blogsRouter.delete("/:id", async (request, response) => {
   try {
     const user = await User.findById(decodedToken.id);
     const blog = await Blog.findById(request.params.id);
+    console.log(user, blog);
 
     if (user.blogs.some(blogId => blogId.toString() === blog._id.toString())) {
       const [error, removedBlog] = await withCatch(

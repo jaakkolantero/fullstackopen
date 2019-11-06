@@ -19,17 +19,13 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      console.log("user", user);
       fetchBlogs();
     }
   }, [user]);
 
   useEffect(() => {
-    console.log(
-      "blogs",
-      blogs.filter(blog => blog.user.username !== user.username)
-    );
-  }, [blogs, user.username]);
+    console.log("blogs", blogs);
+  }, [blogs]);
 
   const fetchBlogs = () => {
     blogService.getAll().then(initialBlogs => setBlogs(initialBlogs));
@@ -85,6 +81,17 @@ const App = () => {
           );
           setBlogs([...newBlogs]);
         });
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
+  const handleDeleteBlog = id => {
+    try {
+      blogService.deleteItem(id, user.token).then(() => {
+        const newBlogs = blogs.filter(blog => blog.id !== id);
+        setBlogs([...newBlogs]);
+      });
     } catch (error) {
       console.log("Error", error);
     }
@@ -153,7 +160,6 @@ const App = () => {
   };
 
   const blogForm = () => {
-    console.log("loggedInuser", user);
     return (
       <div>
         <div className="text-sm text-gray-700 my-3">
@@ -170,6 +176,7 @@ const App = () => {
         </Toggle>
         <BlogListing
           onUpdate={handleUpdateBlog}
+          onDelete={handleDeleteBlog}
           blogs={blogs}
           loggedInUser={user}
         />
