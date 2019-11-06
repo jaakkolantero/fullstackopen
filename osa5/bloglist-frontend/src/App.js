@@ -7,15 +7,23 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  //const [user, setUser] = useState(null);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
+
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useLocalStorage("user", null);
 
   useEffect(() => {
     if (user) {
+      console.log("user", user);
       fetchBlogs();
     }
   }, [user]);
+
+  useEffect(() => {
+    console.log("blogs", blogs);
+  }, [blogs]);
 
   const fetchBlogs = () => {
     blogService.getAll().then(initialBlogs => setBlogs(initialBlogs));
@@ -35,6 +43,25 @@ const App = () => {
       fetchBlogs();
     } catch (error) {
       console.log("error", error);
+    }
+  };
+
+  const handleAddBlog = event => {
+    event.preventDefault();
+    if (!(title && author && url)) {
+      console.log("error! title author or url missing.");
+      return;
+    }
+    try {
+      blogService.create({ title, author, url }, user.token).then(newBlog => {
+        //TODO: update excisting blogs instead of refetch
+        fetchBlogs();
+      });
+      setTitle("");
+      setAuthor("");
+      setUrl("");
+    } catch (error) {
+      console.log("error creating blog", error);
     }
   };
 
@@ -112,17 +139,86 @@ const App = () => {
             Log out
           </button>
         </div>
+        <div className="my-3">{addBlogForm()}</div>
         <h2 className="font-bold py-4 px-4 bg-gray-200 rounded overflow-hidden max-w-xs">
           Blogs
         </h2>
-        {blogs &&
-          blogs
-            .filter(blog => blog.user.username === user.username)
-            .map(blog => (
-              <div>
-                {blog.title} - {blog.author}
-              </div>
-            ))}
+        {blogs
+          .filter(blog => blog.user.username === user.username)
+          .map(blog => (
+            <div key={blog.id}>
+              {blog.title} - {blog.author}
+            </div>
+          ))}
+      </div>
+    );
+  };
+
+  const addBlogForm = () => {
+    return (
+      <div className=" max-w-md bg-gray-100 rounded overflow-hidden">
+        <h1 className="text-base uppercase font-bold text-gray-700 px-4 pt-4 pb-2">
+          Create Blog
+        </h1>
+        <form
+          action=""
+          className="shadow-md px-8 pb-8"
+          onSubmit={handleAddBlog}
+        >
+          <div className="px-4 pb-4">
+            <label htmlFor="title" className="text-sm block font-bold  pb-2">
+              Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              id="title"
+              autoComplete=""
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
+              placeholder="title"
+              value={title}
+              onChange={({ target }) => setTitle(target.value)}
+            />
+          </div>
+          <div className="px-4 pb-4">
+            <label htmlFor="author" className="text-sm block font-bold  pb-2">
+              Author
+            </label>
+            <input
+              type="text"
+              name="author"
+              id="author"
+              autoComplete=""
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
+              placeholder="Author"
+              value={author}
+              onChange={({ target }) => setAuthor(target.value)}
+            />
+          </div>
+          <div className="px-4 pb-4">
+            <label htmlFor="url" className="text-sm block font-bold  pb-2">
+              Url
+            </label>
+            <input
+              type="text"
+              name="url"
+              id="url"
+              autoComplete=""
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
+              placeholder="Url"
+              value={url}
+              onChange={({ target }) => setUrl(target.value)}
+            />
+          </div>
+          <div>
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="submit"
+            >
+              Create
+            </button>
+          </div>
+        </form>
       </div>
     );
   };

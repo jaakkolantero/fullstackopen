@@ -8,4 +8,13 @@ const getAll = () => {
   });
 };
 
-export default { getAll };
+const create = async (newObject, token) => {
+  const config = {
+    headers: { Authorization: `bearer ${token}` }
+  };
+
+  const response = await axios.post(baseUrl, newObject, config);
+  return response.data;
+};
+
+export default { getAll, create };
