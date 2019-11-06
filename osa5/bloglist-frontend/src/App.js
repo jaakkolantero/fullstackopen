@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import "./styles/tailwind.css";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  //const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
+  const [user, setUser] = useLocalStorage("user", null);
+
+  useEffect(() => {
+    if (user) {
+      fetchBlogs();
+    }
+  }, [user]);
 
   const fetchBlogs = () => {
     blogService.getAll().then(initialBlogs => setBlogs(initialBlogs));
@@ -95,7 +103,15 @@ const App = () => {
   const blogForm = () => {
     return (
       <div>
-        <div className="text-sm text-gray-700 my-3">{user.name} logged in!</div>
+        <div className="text-sm text-gray-700 my-3">
+          {user.name} logged in!
+          <button
+            onClick={() => setUser(null)}
+            className="inline-block ml-3 rounded-sm px-2 py-1 overflow-hidden bg-red-200 hover:bg-red-500 border border-gray-700"
+          >
+            Log out
+          </button>
+        </div>
         <h2 className="font-bold py-4 px-4 bg-gray-200 rounded overflow-hidden max-w-xs">
           Blogs
         </h2>
