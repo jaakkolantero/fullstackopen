@@ -5,6 +5,7 @@ import blogService from "./services/blogs";
 import "./styles/tailwind.css";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import Toggle from "./App/Toggle";
+import BlogListing from "./App/BlogListing";
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -148,16 +149,10 @@ const App = () => {
         <Toggle showText="Create blog ▼" hideText="Hide ▲">
           <div className="my-3">{addBlogForm()}</div>
         </Toggle>
-        <h2 className="font-bold py-4 px-4 bg-gray-200 rounded overflow-hidden max-w-xs">
-          Blogs
-        </h2>
-        {blogs
-          .filter(blog => blog.user.username === user.username)
-          .map(blog => (
-            <div key={blog.id}>
-              {blog.title} - {blog.author}
-            </div>
-          ))}
+        <BlogListing
+          blogs={blogs.filter(blog => blog.user.username === user.username)}
+          user={user}
+        />
       </div>
     );
   };
