@@ -25,8 +25,11 @@ const App = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log("blogs", blogs);
-  }, [blogs]);
+    console.log(
+      "blogs",
+      blogs.filter(blog => blog.user.username !== user.username)
+    );
+  }, [blogs, user.username]);
 
   const fetchBlogs = () => {
     blogService.getAll().then(initialBlogs => setBlogs(initialBlogs));
@@ -150,6 +153,7 @@ const App = () => {
   };
 
   const blogForm = () => {
+    console.log("loggedInuser", user);
     return (
       <div>
         <div className="text-sm text-gray-700 my-3">
@@ -166,8 +170,8 @@ const App = () => {
         </Toggle>
         <BlogListing
           onUpdate={handleUpdateBlog}
-          blogs={blogs.filter(blog => blog.user.username === user.username)}
-          user={user}
+          blogs={blogs}
+          loggedInUser={user}
         />
       </div>
     );
