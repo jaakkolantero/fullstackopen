@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Notifications, { notify } from "react-notify-toast";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import "./styles/tailwind.css";
@@ -42,6 +43,7 @@ const App = () => {
       setPassword("");
       fetchBlogs();
     } catch (error) {
+      notify.show("wrong username or password", "error", 3000);
       console.log("error", error);
     }
   };
@@ -49,18 +51,21 @@ const App = () => {
   const handleAddBlog = event => {
     event.preventDefault();
     if (!(title && author && url)) {
+      notify.show("error! title author or url missing.", "error", 3000);
       console.log("error! title author or url missing.");
       return;
     }
     try {
       blogService.create({ title, author, url }, user.token).then(newBlog => {
         //TODO: update excisting blogs instead of refetch
+        notify.show("Blog added!", "success", 3000);
         fetchBlogs();
       });
       setTitle("");
       setAuthor("");
       setUrl("");
     } catch (error) {
+      notify.show("Error Creating blog", "error", 3000);
       console.log("error creating blog", error);
     }
   };
@@ -225,6 +230,7 @@ const App = () => {
 
   return (
     <div className="my-4 mx-8">
+      <Notifications />
       <h1 className="text-red-700 text-4xl font-black">Blog</h1>
       {user === null ? loginForm() : blogForm()}
     </div>
