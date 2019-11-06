@@ -41,20 +41,22 @@ const BlogListing = ({ blogs, user, onUpdate }) => {
     <div>
       <h2 className="font-bold py-4 px-4 text-gray-700">Blogs</h2>
       <div className="mt-3">
-        {blogs.map((blog, i) => (
-          <div
-            className="rounded overflow-hidden bg-indigo-200 border border-gray-200 mb-3"
-            key={blog.id}
-          >
+        {blogs
+          .sort((a, b) => (a.likes < b.likes ? 1 : b.likes < a.likes ? -1 : 0))
+          .map((blog, i) => (
             <div
-              className="text-indigo-800 py-2 px-4 border-b border-indigo-700"
-              onClick={() => toggle(i)}
+              className="rounded overflow-hidden bg-indigo-200 border border-gray-200 mb-3"
+              key={blog.id}
             >
-              {blog.title} - {blog.author}
+              <div
+                className="text-indigo-800 py-2 px-4 border-b border-indigo-700"
+                onClick={() => toggle(i)}
+              >
+                {blog.title} - {blog.author}
+              </div>
+              {show[i] ? additionalInfo(blog) : null}
             </div>
-            {show[i] ? additionalInfo(blog) : null}
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
