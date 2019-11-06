@@ -80,6 +80,7 @@ const App = () => {
             blog.id === id ? { ...blog, author, likes, title, url } : blog
           );
           setBlogs([...newBlogs]);
+          notify.show("Liked!", "success", 3000);
         });
     } catch (error) {
       console.log("Error", error);
@@ -91,6 +92,7 @@ const App = () => {
       blogService.deleteItem(id, user.token).then(() => {
         const newBlogs = blogs.filter(blog => blog.id !== id);
         setBlogs([...newBlogs]);
+        notify.show("Deleted blog", "error", 3000);
       });
     } catch (error) {
       console.log("Error", error);
