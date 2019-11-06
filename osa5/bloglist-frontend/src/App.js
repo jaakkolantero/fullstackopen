@@ -4,6 +4,7 @@ import loginService from "./services/login";
 import blogService from "./services/blogs";
 import "./styles/tailwind.css";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import Toggle from "./App/Toggle";
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -144,7 +145,9 @@ const App = () => {
             Log out
           </button>
         </div>
-        <div className="my-3">{addBlogForm()}</div>
+        <Toggle showText="Create blog ▼" hideText="Hide ▲">
+          <div className="my-3">{addBlogForm()}</div>
+        </Toggle>
         <h2 className="font-bold py-4 px-4 bg-gray-200 rounded overflow-hidden max-w-xs">
           Blogs
         </h2>
