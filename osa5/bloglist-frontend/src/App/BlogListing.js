@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BlogListing = ({ blogs, user }) => {
+const BlogListing = ({ blogs, user, onUpdate }) => {
   const [show, setShow] = useState([...Array(blogs.length)]);
   const toggle = index => {
     const newShow = [...show];
@@ -9,18 +9,30 @@ const BlogListing = ({ blogs, user }) => {
   };
 
   const additionalInfo = blog => {
+    const { user, likes, author, title, url } = blog;
     return (
       <div className="bg-indigo-100 py-2 px-4">
-        <a className="block text-blue-700 hover:text-blue-900" href={blog.url}>
-          {blog.url}
+        <a className="block text-blue-700 hover:text-blue-900" href={url}>
+          {url}
         </a>
         <div>
-          likes:<b>{blog.likes}</b>
+          likes:<b>{likes}</b>
         </div>
-        <button className="inline-block rounded-sm px-2 py-1 overflow-hidden bg-green-200 hover:bg-green-500 border border-gray-700">
+        <button
+          onClick={() =>
+            onUpdate(blog.id, {
+              author,
+              title,
+              url,
+              user: user.id,
+              likes: likes + 1
+            })
+          }
+          className="inline-block rounded-sm px-2 py-1 overflow-hidden bg-green-200 hover:bg-green-500 border border-gray-700"
+        >
           like
         </button>
-        <div>Added by {blog.user.name}</div>
+        <div>Added by {user.name}</div>
       </div>
     );
   };

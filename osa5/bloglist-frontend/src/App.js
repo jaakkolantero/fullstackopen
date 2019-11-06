@@ -72,6 +72,21 @@ const App = () => {
     }
   };
 
+  const handleUpdateBlog = (id, blogToUpdate) => {
+    try {
+      blogService
+        .update(id, blogToUpdate)
+        .then(({ author, id, likes, title, url }) => {
+          const newBlogs = blogs.map(blog =>
+            blog.id === id ? { ...blog, author, likes, title, url } : blog
+          );
+          setBlogs([...newBlogs]);
+        });
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
   const loginForm = () => {
     return (
       <div className="w-full flex mt-32 ml-8">
@@ -150,6 +165,7 @@ const App = () => {
           <div className="my-3">{addBlogForm()}</div>
         </Toggle>
         <BlogListing
+          onUpdate={handleUpdateBlog}
           blogs={blogs.filter(blog => blog.user.username === user.username)}
           user={user}
         />
