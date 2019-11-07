@@ -13,6 +13,7 @@ const App = () => {
   const { set: setTitle, ...title } = useField("text");
   const { set: setAuthor, ...author } = useField("text");
   const { set: setUrl, ...url } = useField("text");
+  // fixed it and kept API the same 💪
 
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useLocalStorage("user", null);
