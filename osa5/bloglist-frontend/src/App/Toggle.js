@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import propTypes from "prop-types";
 
 const Toggle = ({ showText, hideText, children }) => {
   const [show, setShow] = useState(false);
@@ -15,6 +16,12 @@ const Toggle = ({ showText, hideText, children }) => {
       {show ? children : null}
     </div>
   );
+};
+
+Toggle.propTypes = {
+  showText: propTypes.string.isRequired,
+  hideText: propTypes.string.isRequired,
+  children: propTypes.node.isRequired
 };
 
 export default Toggle;
