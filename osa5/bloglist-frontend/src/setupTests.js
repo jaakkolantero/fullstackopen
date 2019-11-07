@@ -1,13 +1,7 @@
+import "jest-localstorage-mock";
 import "@testing-library/jest-dom/extend-expect";
 
-let savedItems = {};
-
-const localStorageMock = {
-  setItem: (key, item) => {
-    savedItems[key] = item;
-  },
-  getItem: key => savedItems[key],
-  clear: (savedItems = {})
-};
-
-Object.defineProperty(window, "localStorage", { value: localStorageMock });
+beforeEach(() => {
+  // values stored in tests will also be available in other tests unless you run
+  localStorage.clear();
+});

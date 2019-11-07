@@ -42,6 +42,7 @@
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
     "eslint-plugin-jest": "^23.0.2",
+    "jest-localstorage-mock": "^2.4.0",
     "postcss-cli": "^6.1.3",
     "tailwindcss": "^1.1.3"
   },
