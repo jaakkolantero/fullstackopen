@@ -3,16 +3,16 @@ import Notifications, { notify } from "react-notify-toast";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import "./styles/tailwind.css";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useLocalStorage, useField } from "./hooks";
 import Toggle from "./App/Toggle";
 import BlogListing from "./App/BlogListing";
 
 const App = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const { set: setUserName, ...username } = useField("text");
+  const { set: setPassword, ...password } = useField("password");
 
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useLocalStorage("user", null);
@@ -35,12 +35,12 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await loginService.login({
-        username,
-        password
+        username: username.value,
+        password: password.value
       });
 
       setUser(user);
-      setUsername("");
+      setUserName("");
       setPassword("");
       fetchBlogs();
     } catch (error) {
@@ -120,14 +120,12 @@ const App = () => {
                 username
               </label>
               <input
-                type="text"
+                {...username}
                 name="username"
                 id="username"
                 autoComplete="username"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
                 placeholder="username"
-                value={username}
-                onChange={({ target }) => setUsername(target.value)}
               />
             </div>
             <div className="px-4 pb-4">
@@ -138,14 +136,12 @@ const App = () => {
                 password
               </label>
               <input
-                type="password"
+                {...password}
                 name="password"
                 id="password"
                 autoComplete="current-password"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300"
                 placeholder="Enter your password"
-                value={password}
-                onChange={({ target }) => setPassword(target.value)}
               />
             </div>
             <div>

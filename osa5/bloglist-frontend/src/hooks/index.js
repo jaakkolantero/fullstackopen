@@ -1,5 +1,24 @@
 import { useState } from "react";
 
+export const useField = type => {
+  const [value, setValue] = useState("");
+
+  const onChange = event => {
+    setValue(event.target.value);
+  };
+
+  const set = value => {
+    setValue(value);
+  };
+
+  return {
+    type,
+    value,
+    onChange,
+    set
+  };
+};
+
 // Hook
 export const useLocalStorage = (key, initialValue) => {
   // State to store our value
