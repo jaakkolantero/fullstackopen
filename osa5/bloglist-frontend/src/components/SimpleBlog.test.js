@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import SimpleBlog from "./SimpleBlog";
 
 test("renders title author and number of likes", () => {
@@ -17,4 +17,13 @@ test("renders title author and number of likes", () => {
   expect(wrapper.getByTestId("simpleblog-likes").textContent).toContain(
     blog.likes
   );
+});
+
+test("calls onClick event on click", () => {
+  const blog = { title: "this is title", author: "Tero Jaakkola", likes: 5 };
+  const mockHandler = jest.fn();
+  const wrapper = render(<SimpleBlog blog={blog} onClick={mockHandler} />);
+  fireEvent.click(wrapper.getByTestId("simpleblog-button"));
+  fireEvent.click(wrapper.getByTestId("simpleblog-button"));
+  expect(mockHandler.mock.calls.length).toBe(2);
 });
