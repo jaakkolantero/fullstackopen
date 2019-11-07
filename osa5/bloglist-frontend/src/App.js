@@ -102,7 +102,7 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      <div className="w-full flex mt-32 ml-8">
+      <div data-testid="loginform-container" className="w-full flex mt-32 ml-8">
         <div className=" max-w-md bg-gray-100 rounded overflow-hidden">
           <h1 className="text-base uppercase font-bold text-gray-700 px-8 pt-8 pb-4">
             Log in to application
@@ -164,7 +164,7 @@ const App = () => {
 
   const blogForm = () => {
     return (
-      <div>
+      <div data-testid="blogform-container">
         <div className="text-sm text-gray-700 my-3">
           {user.name} logged in!
           <button
@@ -257,7 +257,7 @@ const App = () => {
   };
 
   return (
-    <div className="my-4 mx-8">
+    <div data-testid="app-container" className="my-4 mx-8">
       <Notifications />
       <h1 className="text-red-700 text-4xl font-black">Blog</h1>
       {user === null ? loginForm() : blogForm()}
