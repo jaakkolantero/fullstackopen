@@ -8,11 +8,11 @@ import Toggle from "./App/Toggle";
 import BlogListing from "./App/BlogListing";
 
 const App = () => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const { set: setUserName, ...username } = useField("text");
   const { set: setPassword, ...password } = useField("password");
+  const { set: setTitle, ...title } = useField("text");
+  const { set: setAuthor, ...author } = useField("text");
+  const { set: setUrl, ...url } = useField("text");
 
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useLocalStorage("user", null);
@@ -200,13 +200,13 @@ const App = () => {
             </label>
             <input
               type="text"
+              value={title}
+              onChange={({ target }) => setTitle(target.value)}
               name="title"
               id="title"
               autoComplete=""
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
               placeholder="title"
-              value={title}
-              onChange={({ target }) => setTitle(target.value)}
             />
           </div>
           <div className="px-4 pb-4">
@@ -215,13 +215,13 @@ const App = () => {
             </label>
             <input
               type="text"
+              value={author}
+              onChange={({ target }) => setAuthor(target.value)}
               name="author"
               id="author"
               autoComplete=""
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
               placeholder="Author"
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
             />
           </div>
           <div className="px-4 pb-4">
@@ -230,13 +230,13 @@ const App = () => {
             </label>
             <input
               type="text"
+              value={url}
+              onChange={({ target }) => setUrl(target.value)}
               name="url"
               id="url"
               autoComplete=""
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
               placeholder="Url"
-              value={url}
-              onChange={({ target }) => setUrl(target.value)}
             />
           </div>
           <div>
