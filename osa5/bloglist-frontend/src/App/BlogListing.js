@@ -32,7 +32,10 @@ const BlogListing = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
     console.log(blogsWithExtras);
     const { user, likes, author, title, url, id, confirm } = blog;
     return (
-      <div className="bg-indigo-100 py-2 px-4">
+      <div
+        data-testid="bloglisting-additional"
+        className="bg-indigo-100 py-2 px-4"
+      >
         <a
           className="inline-block text-blue-700 hover:text-blue-900"
           href={url}
@@ -104,6 +107,7 @@ const BlogListing = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
               key={blog.id}
             >
               <div
+                data-testid="bloglisting-titleAndAuthor"
                 className="text-indigo-800 py-2 px-4 border-b border-indigo-700"
                 onClick={() => toggleShow(blog.id)}
               >
