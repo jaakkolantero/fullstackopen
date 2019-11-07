@@ -98,7 +98,7 @@ const BlogListing = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
       <div className="mt-3">
         {blogsWithExtras
           .sort((a, b) => (a.likes < b.likes ? 1 : b.likes < a.likes ? -1 : 0))
-          .map((blog, i) => (
+          .map(blog => (
             <div
               className="rounded overflow-hidden bg-indigo-200 border border-gray-200 mb-3"
               key={blog.id}
