@@ -36,6 +36,8 @@
   },
   "proxy": "http://localhost:3003",
   "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.3",
+    "@testing-library/react": "^9.3.2",
     "autoprefixer": "^9.7.1",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
