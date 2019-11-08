@@ -13,7 +13,7 @@ const AnecdoteList = ({
   resetNotification
 }) => {
   const handleVote = anecdote => {
-    vote(anecdote.id);
+    vote(anecdote);
     setNotification(`voted ${anecdote.content}!`);
     setTimeout(() => {
       resetNotification();
