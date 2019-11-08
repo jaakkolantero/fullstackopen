@@ -1,19 +1,25 @@
 import React from "react";
 import { useField } from "../hooks";
-import { add } from "../reducers/anecdoteReducer";
+import { addWithExtras } from "../reducers/anecdoteReducer";
 import {
   setNotification,
   resetNotification
 } from "../reducers/notificationReducer";
 import { connect } from "react-redux";
+import anecdoteService from "../services/anecdotes";
 
-export const AnecdoteForm = ({ add, setNotification, resetNotification }) => {
+export const AnecdoteForm = ({
+  addWithExtras,
+  setNotification,
+  resetNotification
+}) => {
   const { set: setAnecdote, ...anecdote } = useField("text");
 
-  const handleNewAnecdote = event => {
+  const handleNewAnecdote = async event => {
     event.preventDefault();
     const newAnecdote = event.target.anecdote.value;
-    add(newAnecdote);
+    const addedAnecdote = await anecdoteService.createNew(newAnecdote);
+    addWithExtras(addedAnecdote);
     setAnecdote("");
     setNotification(`created anecdote ${newAnecdote}!`);
     setTimeout(() => {
@@ -32,7 +38,7 @@ export const AnecdoteForm = ({ add, setNotification, resetNotification }) => {
 };
 
 const mapDispatchToProps = {
-  add,
+  addWithExtras,
   setNotification,
   resetNotification
 };

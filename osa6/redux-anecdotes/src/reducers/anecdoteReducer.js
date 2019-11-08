@@ -1,4 +1,4 @@
-const getId = () => (100000 * Math.random()).toFixed(0);
+export const getId = () => (100000 * Math.random()).toFixed(0);
 
 const reducer = (state = [], action) => {
   switch (action.type) {
@@ -10,14 +10,12 @@ const reducer = (state = [], action) => {
           ? item
           : { ...item, votes: item.votes + 1 };
       });
+    case "ADDWITHEXTRAS":
     case "ADD":
       return [...state, action.anecdote];
-
     default:
-      break;
+      return state;
   }
-
-  return state;
 };
 
 export const vote = id => {
@@ -31,6 +29,13 @@ export const add = anecdote => {
   return {
     type: "ADD",
     anecdote: { content: anecdote, id: getId(), votes: 0 }
+  };
+};
+
+export const addWithExtras = anecdote => {
+  return {
+    type: "ADDWITHEXTRAS",
+    anecdote
   };
 };
 
