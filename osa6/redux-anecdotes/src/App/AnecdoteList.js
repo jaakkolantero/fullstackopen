@@ -4,16 +4,14 @@ import {
   setNotification,
   resetNotification
 } from "../reducers/notificationReducer";
+import { connect } from "react-redux";
 
-export const AnecdoteList = ({ store }) => {
-  const anecdotes = store.getState().anecdotes;
-  const filter = store.getState().filter;
-
+const AnecdoteList = ({ anecdotes, filter, vote, setNotification }) => {
   const handleVote = anecdote => {
-    store.dispatch(vote(anecdote.id));
-    store.dispatch(setNotification(`voted ${anecdote.content}!`));
+    vote(anecdote.id);
+    setNotification(`voted ${anecdote.content}!`);
     setTimeout(() => {
-      store.dispatch(resetNotification());
+      resetNotification();
     }, 5000);
     //TODO: debounce to make it work with multiple votes
   };
@@ -38,3 +36,23 @@ export const AnecdoteList = ({ store }) => {
     </div>
   );
 };
+
+const mapStateToProps = state => {
+  // joskus on hyödyllistä tulostaa mapStateToProps:ista...
+  console.log(state);
+  return {
+    anecdotes: state.anecdotes,
+    filter: state.filter
+  };
+};
+
+const mapDispatchToProps = {
+  vote,
+  setNotification,
+  resetNotification
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AnecdoteList);
