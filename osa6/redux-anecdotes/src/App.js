@@ -1,8 +1,17 @@
 import React from "react";
-import { vote } from "./reducers/anecdoteReducer";
+import { vote, add } from "./reducers/anecdoteReducer";
+import { useField } from "./hooks";
 
 const App = ({ store }) => {
   const anecdotes = store.getState();
+  const { set: setAnecdote, ...anecdote } = useField("text");
+
+  const handleNewAnecdote = event => {
+    event.preventDefault();
+    console.log("anecdote", event.target);
+    const newAnecdote = event.target.anecdote.value;
+    store.dispatch(add(newAnecdote));
+  };
 
   return (
     <div>
@@ -19,9 +28,9 @@ const App = ({ store }) => {
         </div>
       ))}
       <h2>create new</h2>
-      <form>
+      <form onSubmit={handleNewAnecdote}>
         <div>
-          <input />
+          <input name="anecdote" {...anecdote} />
         </div>
         <button>create</button>
       </form>
