@@ -13,3 +13,17 @@ export default (state = initialState, { type, payload }) => {
 
 export const setNotification = payload => ({ type: "SET", payload });
 export const resetNotification = payload => ({ type: "RESET", payload });
+
+export const notify = (notification, time) => {
+  return async dispatch => {
+    dispatch({
+      type: "SET",
+      payload: notification
+    });
+    setTimeout(() => {
+      dispatch({
+        type: "RESET"
+      });
+    }, time * 1000);
+  };
+};

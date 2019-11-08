@@ -1,23 +1,12 @@
 import React from "react";
 import { vote } from "../reducers/anecdoteReducer";
-import {
-  setNotification,
-  resetNotification
-} from "../reducers/notificationReducer";
+import { notify } from "../reducers/notificationReducer";
 import { connect } from "react-redux";
 
-const AnecdoteList = ({
-  anecdotes,
-  vote,
-  setNotification,
-  resetNotification
-}) => {
+const AnecdoteList = ({ anecdotes, vote, notify }) => {
   const handleVote = anecdote => {
     vote(anecdote);
-    setNotification(`voted ${anecdote.content}!`);
-    setTimeout(() => {
-      resetNotification();
-    }, 5000);
+    notify(`voted ${anecdote.content}!`, 2);
     //TODO: debounce to make it work with multiple votes
   };
   return (
@@ -53,8 +42,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   vote,
-  setNotification,
-  resetNotification
+  notify
 };
 
 export default connect(

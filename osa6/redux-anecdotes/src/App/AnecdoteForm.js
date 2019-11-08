@@ -1,17 +1,10 @@
 import React from "react";
 import { useField } from "../hooks";
 import { addWithExtras } from "../reducers/anecdoteReducer";
-import {
-  setNotification,
-  resetNotification
-} from "../reducers/notificationReducer";
+import { notify } from "../reducers/notificationReducer";
 import { connect } from "react-redux";
 
-export const AnecdoteForm = ({
-  addWithExtras,
-  setNotification,
-  resetNotification
-}) => {
+export const AnecdoteForm = ({ addWithExtras, notify }) => {
   const { set: setAnecdote, ...anecdote } = useField("text");
 
   const handleNewAnecdote = async event => {
@@ -19,10 +12,7 @@ export const AnecdoteForm = ({
     const newAnecdote = event.target.anecdote.value;
     addWithExtras(newAnecdote);
     setAnecdote("");
-    setNotification(`created anecdote ${newAnecdote}!`);
-    setTimeout(() => {
-      resetNotification();
-    }, 5000);
+    notify(`created anecdote ${newAnecdote}!`, 5);
   };
 
   return (
@@ -37,8 +27,7 @@ export const AnecdoteForm = ({
 
 const mapDispatchToProps = {
   addWithExtras,
-  setNotification,
-  resetNotification
+  notify
 };
 
 export default connect(
