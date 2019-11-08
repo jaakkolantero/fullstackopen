@@ -1,5 +1,4 @@
 import React from "react";
-import anecdoteService from "./services/anecdotes";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import { init } from "./reducers/anecdoteReducer";
@@ -10,7 +9,7 @@ import Filter from "./components/Filter";
 
 const App = ({ init }) => {
   useEffect(() => {
-    anecdoteService.getAll().then(anecdotes => init(anecdotes));
+    init();
   });
   return (
     <div>
