@@ -1,8 +1,21 @@
 import React from "react";
 import { vote } from "../reducers/anecdoteReducer";
+import {
+  setNotification,
+  resetNotification
+} from "../reducers/notificationReducer";
 
 export const AnecdoteList = ({ store }) => {
   const anecdotes = store.getState().anecdotes;
+
+  const handleVote = anecdote => {
+    store.dispatch(vote(anecdote.id));
+    store.dispatch(setNotification(`voted ${anecdote.content}!`));
+    setTimeout(() => {
+      store.dispatch(resetNotification());
+    }, 5000);
+    //TODO: debounce to make it work with multiple votes
+  };
   return (
     <div>
       {anecdotes
@@ -12,9 +25,7 @@ export const AnecdoteList = ({ store }) => {
             <div>{anecdote.content}</div>
             <div>
               has {anecdote.votes}
-              <button onClick={() => store.dispatch(vote(anecdote.id))}>
-                vote
-              </button>
+              <button onClick={() => handleVote(anecdote)}>vote</button>
             </div>
           </div>
         ))}

@@ -1,6 +1,10 @@
 import React from "react";
 import { useField } from "../hooks";
 import { add } from "../reducers/anecdoteReducer";
+import {
+  setNotification,
+  resetNotification
+} from "../reducers/notificationReducer";
 
 export const AnecdoteForm = ({ store }) => {
   const { set: setAnecdote, ...anecdote } = useField("text");
@@ -11,6 +15,10 @@ export const AnecdoteForm = ({ store }) => {
     const newAnecdote = event.target.anecdote.value;
     store.dispatch(add(newAnecdote));
     setAnecdote("");
+    store.dispatch(setNotification(`created anecdote ${newAnecdote}!`));
+    setTimeout(() => {
+      store.dispatch(resetNotification());
+    }, 5000);
   };
 
   return (
