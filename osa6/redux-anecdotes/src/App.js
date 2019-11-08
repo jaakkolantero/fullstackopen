@@ -1,10 +1,17 @@
 import React from "react";
+import anecdoteService from "./services/anecdotes";
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import { init } from "./reducers/anecdoteReducer";
 import AnecdoteForm from "./App/AnecdoteForm";
 import AnecdoteList from "./App/AnecdoteList";
 import Notification from "./components/Notification";
 import Filter from "./components/Filter";
 
-const App = () => {
+const App = ({ init }) => {
+  useEffect(() => {
+    anecdoteService.getAll().then(anecdotes => init(anecdotes));
+  });
   return (
     <div>
       <Notification />
@@ -17,4 +24,7 @@ const App = () => {
   );
 };
 
-export default App;
+export default connect(
+  null,
+  { init }
+)(App);
