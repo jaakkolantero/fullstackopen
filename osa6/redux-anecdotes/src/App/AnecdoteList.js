@@ -6,7 +6,13 @@ import {
 } from "../reducers/notificationReducer";
 import { connect } from "react-redux";
 
-const AnecdoteList = ({ anecdotes, filter, vote, setNotification }) => {
+const AnecdoteList = ({
+  anecdotes,
+  filter,
+  vote,
+  setNotification,
+  resetNotification
+}) => {
   const handleVote = anecdote => {
     vote(anecdote.id);
     setNotification(`voted ${anecdote.content}!`);
@@ -39,7 +45,6 @@ const AnecdoteList = ({ anecdotes, filter, vote, setNotification }) => {
 
 const mapStateToProps = state => {
   // joskus on hyödyllistä tulostaa mapStateToProps:ista...
-  console.log(state);
   return {
     anecdotes: state.anecdotes,
     filter: state.filter
