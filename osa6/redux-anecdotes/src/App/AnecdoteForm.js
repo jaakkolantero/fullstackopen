@@ -10,6 +10,7 @@ export const AnecdoteForm = ({ store }) => {
     console.log("anecdote", event.target);
     const newAnecdote = event.target.anecdote.value;
     store.dispatch(add(newAnecdote));
+    setAnecdote("");
   };
 
   return (
