@@ -59,11 +59,16 @@ const App = () => {
     }
     try {
       // eslint-disable-next-line no-unused-vars
-      blogService.create({ title, author, url }, user.token).then(newBlog => {
-        //TODO: update excisting blogs instead of refetch
-        notify.show("Blog added!", "success", 3000);
-        fetchBlogs();
-      });
+      blogService
+        .create(
+          { title: title.value, author: author.value, url: url.value },
+          user.token
+        )
+        .then(newBlog => {
+          //TODO: update excisting blogs instead of refetch
+          notify.show("Blog added!", "success", 3000);
+          fetchBlogs();
+        });
       setTitle("");
       setAuthor("");
       setUrl("");
