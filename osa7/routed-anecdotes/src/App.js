@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Switch, Route, Link, useParams } from "react-router-dom";
+import { Switch, Route, Link, useParams, Redirect } from "react-router-dom";
 
 const Menu = () => {
   const padding = {
@@ -25,8 +25,8 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map((anecdote, i) => (
-        <Link to={`/anecdotes/${i}`}>
-          <li key={anecdote.id}>{anecdote.content}</li>
+        <Link key={anecdote.id} to={`/anecdotes/${i}`}>
+          <li>{anecdote.content}</li>
         </Link>
       ))}
     </ul>
@@ -85,6 +85,7 @@ const CreateNew = props => {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
+  const [created, setCreated] = useState(false);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -94,9 +95,16 @@ const CreateNew = props => {
       info,
       votes: 0
     });
+    setCreated(true);
   };
 
-  return (
+  return created ? (
+    <Redirect
+      to={{
+        pathname: "/"
+      }}
+    />
+  ) : (
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
@@ -130,7 +138,7 @@ const CreateNew = props => {
   );
 };
 
-const App = () => {
+const App = props => {
   const [anecdotes, setAnecdotes] = useState([
     {
       content: "If it hurts, do it more often",
@@ -153,6 +161,10 @@ const App = () => {
   const addNew = anecdote => {
     anecdote.id = (Math.random() * 10000).toFixed(0);
     setAnecdotes(anecdotes.concat(anecdote));
+    setNotification(`a new anecdote "${anecdote.content}" created!`);
+    setTimeout(() => {
+      setNotification(null);
+    }, 10000);
   };
 
   const anecdoteById = id => anecdotes.find(a => a.id === id);
@@ -172,6 +184,7 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification && <div>{notification}</div>}
       <Switch>
         <Route path="/" exact>
           <AnecdoteList anecdotes={anecdotes} />
