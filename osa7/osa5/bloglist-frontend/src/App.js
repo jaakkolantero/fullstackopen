@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import Notifications, { notify } from "react-notify-toast";
+import Notifications from "react-notify-toast";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import "./styles/tailwind.css";
 import { useLocalStorage, useField } from "./hooks";
 import Toggle from "./App/Toggle";
 import BlogListing from "./App/BlogListing";
+import { notify } from "./reducers/notificationReducer";
+import { connect } from "react-redux";
 
-const App = () => {
+const App = ({ notify }) => {
   const { set: setUserName, ...username } = useField("text");
   const { set: setPassword, ...password } = useField("password");
   const { set: setTitle, ...title } = useField("text");
@@ -45,7 +47,7 @@ const App = () => {
       setPassword("");
       fetchBlogs();
     } catch (error) {
-      notify.show("wrong username or password", "error", 3000);
+      notify("wrong username or password", "error", 3000);
       console.log("error", error);
     }
   };
@@ -53,22 +55,27 @@ const App = () => {
   const handleAddBlog = event => {
     event.preventDefault();
     if (!(title && author && url)) {
-      notify.show("error! title author or url missing.", "error", 3000);
+      notify("error! title author or url missing.", "error", 3000);
       console.log("error! title author or url missing.");
       return;
     }
     try {
       // eslint-disable-next-line no-unused-vars
-      blogService.create({ title, author, url }, user.token).then(newBlog => {
-        //TODO: update excisting blogs instead of refetch
-        notify.show("Blog added!", "success", 3000);
-        fetchBlogs();
-      });
+      blogService
+        .create(
+          { title: title.value, author: author.value, url: url.value },
+          user.token
+        )
+        .then(newBlog => {
+          //TODO: update excisting blogs instead of refetch
+          notify("Blog added!", "success", 3000);
+          fetchBlogs();
+        });
       setTitle("");
       setAuthor("");
       setUrl("");
     } catch (error) {
-      notify.show("Error Creating blog", "error", 3000);
+      notify("Error Creating blog", "error", 3000);
       console.log("error creating blog", error);
     }
   };
@@ -82,7 +89,7 @@ const App = () => {
             blog.id === id ? { ...blog, author, likes, title, url } : blog
           );
           setBlogs([...newBlogs]);
-          notify.show("Liked!", "success", 3000);
+          notify("Liked!", "success", 3000);
         });
     } catch (error) {
       console.log("Error", error);
@@ -94,7 +101,7 @@ const App = () => {
       blogService.deleteItem(id, user.token).then(() => {
         const newBlogs = blogs.filter(blog => blog.id !== id);
         setBlogs([...newBlogs]);
-        notify.show("Deleted blog", "error", 3000);
+        notify("Deleted blog", "error", 3000);
       });
     } catch (error) {
       console.log("Error", error);
@@ -200,9 +207,7 @@ const App = () => {
               Title
             </label>
             <input
-              type="text"
-              value={title}
-              onChange={({ target }) => setTitle(target.value)}
+              {...title}
               name="title"
               id="title"
               autoComplete=""
@@ -215,9 +220,7 @@ const App = () => {
               Author
             </label>
             <input
-              type="text"
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
+              {...author}
               name="author"
               id="author"
               autoComplete=""
@@ -230,9 +233,7 @@ const App = () => {
               Url
             </label>
             <input
-              type="text"
-              value={url}
-              onChange={({ target }) => setUrl(target.value)}
+              {...url}
               name="url"
               id="url"
               autoComplete=""
@@ -262,4 +263,7 @@ const App = () => {
   );
 };
 
-export default App;
+export default connect(
+  null,
+  { notify }
+)(App);
