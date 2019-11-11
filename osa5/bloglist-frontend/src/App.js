@@ -200,9 +200,7 @@ const App = () => {
               Title
             </label>
             <input
-              type="text"
-              value={title}
-              onChange={({ target }) => setTitle(target.value)}
+              {...title}
               name="title"
               id="title"
               autoComplete=""
@@ -215,9 +213,7 @@ const App = () => {
               Author
             </label>
             <input
-              type="text"
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
+              {...author}
               name="author"
               id="author"
               autoComplete=""
@@ -230,9 +226,7 @@ const App = () => {
               Url
             </label>
             <input
-              type="text"
-              value={url}
-              onChange={({ target }) => setUrl(target.value)}
+              {...url}
               name="url"
               id="url"
               autoComplete=""
