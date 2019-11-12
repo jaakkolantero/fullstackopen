@@ -13,6 +13,7 @@ import { getAll as getUsers } from "./reducers/usersReducer";
 import { connect, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import UsersListing from "./App/UsersListing";
+import { SingleBlog } from "./App/SingleBlog";
 
 const App = ({
   notify,
@@ -196,6 +197,14 @@ const App = ({
         <Switch>
           <Route path="/users">
             <UsersListing />
+          </Route>
+          <Route path="/blogs/:blogId">
+            <SingleBlog
+              onUpdate={handleUpdateBlog}
+              onDelete={handleDeleteBlog}
+              blogs={blogs}
+              loggedInUser={loggedInUser}
+            />
           </Route>
           <Route path="/">
             <Toggle showText="Create blog ▼" hideText="Hide ▲">

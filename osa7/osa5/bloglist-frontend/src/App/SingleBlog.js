@@ -1,32 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-const BlogListing = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
-  const [blogsWithExtras, setBlogWithExtras] = useState([]);
-
-  const toggleShow = id => {
-    const newBlogWithExtras = blogsWithExtras.map(blog =>
-      blog.id === id ? { ...blog, show: !blog.show } : blog
-    );
-    setBlogWithExtras(newBlogWithExtras);
-  };
+export const SingleBlog = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
+  let { blogId } = useParams();
+  const [blogsWithExtras, setBlogWithExtras] = useState({});
 
   const toggleConfirm = id => {
-    const newBlogWithExtras = blogsWithExtras.map(blog =>
-      blog.id === id ? { ...blog, confirm: !blog.confirm } : blog
-    );
+    const newBlogWithExtras = {
+      ...blogsWithExtras,
+      confirm: !blogsWithExtras.confirm
+    };
     setBlogWithExtras(newBlogWithExtras);
   };
 
   useEffect(() => {
-    if (blogs) {
-      const newBlogWithExtras = blogs.map(blog => ({
-        ...blog,
-        confirm: false,
-        show: false
-      }));
-      setBlogWithExtras(newBlogWithExtras);
-    }
-  }, [blogs]);
+    const newBlogWithExtras = {
+      ...blogs.find(blog => blog.id === blogId),
+      confirm: false
+    };
+    setBlogWithExtras(newBlogWithExtras);
+  }, [blogs, blogId]);
 
   const additionalInfo = blog => {
     const { user, likes, author, title, url, id, confirm } = blog;
@@ -94,36 +87,14 @@ const BlogListing = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
     );
   };
 
-  return (
+  return blogsWithExtras.id ? (
     <div>
-      <h2 className="font-bold py-4 px-4 text-gray-700">Blogs</h2>
-      <div className="mt-3">
-        {blogsWithExtras
-          .sort((a, b) => (a.likes < b.likes ? 1 : b.likes < a.likes ? -1 : 0))
-          .map(blog => (
-            <div
-              className="rounded overflow-hidden bg-indigo-200 border border-gray-200 mb-3"
-              key={blog.id}
-            >
-              <div
-                data-testid="bloglisting-titleAndAuthor"
-                className="text-indigo-800 py-2 px-4 border-b border-indigo-700"
-                onClick={() => toggleShow(blog.id)}
-              >
-                {blog.title} - {blog.author}
-                <a
-                  className="text-xs underline text-black"
-                  href={`/blogs/${blog.id}`}
-                >
-                  open detail page
-                </a>
-              </div>
-              {blog.show ? additionalInfo(blog) : null}
-            </div>
-          ))}
+      <div>
+        {blogsWithExtras.title} - {blogsWithExtras.author}
       </div>
+      <div>{additionalInfo(blogsWithExtras)}</div>
     </div>
+  ) : (
+    <div>blog not found</div>
   );
 };
-
-export default BlogListing;
