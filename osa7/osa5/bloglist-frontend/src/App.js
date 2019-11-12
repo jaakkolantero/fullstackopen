@@ -14,6 +14,7 @@ import { connect, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import UsersListing from "./App/UsersListing";
 import { SingleBlog } from "./App/SingleBlog";
+import { Nav } from "./App/Nav";
 
 const App = ({
   notify,
@@ -288,6 +289,7 @@ const App = ({
   return (
     <div data-testid="app-container" className="my-4 mx-8">
       <Notifications />
+      <Nav />
       <h1 className="text-red-700 text-4xl font-black">Blog</h1>
       {loggedInUser === null ? loginForm() : blogForm()}
     </div>
