@@ -8,9 +8,10 @@ import Toggle from "./App/Toggle";
 import BlogListing from "./App/BlogListing";
 import { notify } from "./reducers/notificationReducer";
 import { create, getAll, update } from "./reducers/blogServiceReducer";
+import { setUser as loginUser, resetUser } from "./reducers/userReducer";
 import { connect, useSelector } from "react-redux";
 
-const App = ({ notify, create, getAll, update, reduxBlogs }) => {
+const App = ({ notify, create, getAll, update, loginUser, resetUser }) => {
   const { set: setUserName, ...username } = useField("text");
   const { set: setPassword, ...password } = useField("password");
   const { set: setTitle, ...title } = useField("text");
@@ -19,13 +20,22 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
   // fixed it and kept API the same 💪
 
   const blogs = useSelector(state => state.blogs);
-  const [user, setUser] = useLocalStorage("user", null);
+  const [savedUser, setSavedUser] = useLocalStorage("user", null);
+  const loggedInUser = useSelector(state => state.user);
 
   useEffect(() => {
-    if (user) {
+    if (loggedInUser) {
+      if (!savedUser) {
+        setSavedUser(loggedInUser);
+      }
       fetchBlogs();
     }
-  }, [user]);
+    if (savedUser) {
+      loginUser(savedUser);
+    }
+  }, [loggedInUser]);
+
+  useEffect(() => {}, [savedUser]);
 
   useEffect(() => {
     console.log("blogs", blogs);
@@ -43,7 +53,7 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
         password: password.value
       });
 
-      setUser(user);
+      loginUser(user);
       setUserName("");
       setPassword("");
       fetchBlogs();
@@ -51,6 +61,11 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
       notify("wrong username or password", "error", 3000);
       console.log("error", error);
     }
+  };
+
+  const handleLogout = () => {
+    resetUser();
+    setSavedUser(null);
   };
 
   const handleAddBlog = event => {
@@ -63,7 +78,7 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
     try {
       create(
         { title: title.value, author: author.value, url: url.value },
-        user.token
+        loggedInUser.token
       );
       notify("Blog added!", "success", 3000);
       fetchBlogs();
@@ -88,7 +103,7 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
 
   const handleDeleteBlog = id => {
     try {
-      blogService.deleteItem(id, user.token).then(() => {
+      blogService.deleteItem(id, loggedInUser.token).then(() => {
         fetchBlogs();
         notify("Deleted blog", "error", 3000);
       });
@@ -159,9 +174,9 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
     return (
       <div data-testid="blogform-container">
         <div className="text-sm text-gray-700 my-3">
-          {user.name} logged in!
+          {loggedInUser.name} logged in!
           <button
-            onClick={() => setUser(null)}
+            onClick={() => handleLogout()}
             className="inline-block ml-3 rounded-sm px-2 py-1 overflow-hidden bg-red-200 hover:bg-red-500 border border-gray-700"
           >
             Log out
@@ -174,7 +189,7 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
           onUpdate={handleUpdateBlog}
           onDelete={handleDeleteBlog}
           blogs={blogs}
-          loggedInUser={user}
+          loggedInUser={loggedInUser}
         />
       </div>
     );
@@ -247,12 +262,12 @@ const App = ({ notify, create, getAll, update, reduxBlogs }) => {
     <div data-testid="app-container" className="my-4 mx-8">
       <Notifications />
       <h1 className="text-red-700 text-4xl font-black">Blog</h1>
-      {user === null ? loginForm() : blogForm()}
+      {loggedInUser === null ? loginForm() : blogForm()}
     </div>
   );
 };
 
 export default connect(
   null,
-  { notify, create, update, getAll }
+  { notify, create, update, getAll, loginUser, resetUser }
 )(App);
