@@ -9,15 +9,25 @@ import BlogListing from "./App/BlogListing";
 import { notify } from "./reducers/notificationReducer";
 import { create, getAll, update } from "./reducers/blogServiceReducer";
 import { setUser as loginUser, resetUser } from "./reducers/userReducer";
+import { getAll as getUsers } from "./reducers/usersReducer";
 import { connect, useSelector } from "react-redux";
+import { Switch, Route } from "react-router-dom";
+import UsersListing from "./App/UsersListing";
 
-const App = ({ notify, create, getAll, update, loginUser, resetUser }) => {
+const App = ({
+  notify,
+  create,
+  getAll,
+  update,
+  loginUser,
+  resetUser,
+  getUsers
+}) => {
   const { set: setUserName, ...username } = useField("text");
   const { set: setPassword, ...password } = useField("password");
   const { set: setTitle, ...title } = useField("text");
   const { set: setAuthor, ...author } = useField("text");
   const { set: setUrl, ...url } = useField("text");
-  // fixed it and kept API the same 💪
 
   const blogs = useSelector(state => state.blogs);
   const [savedUser, setSavedUser] = useLocalStorage("user", null);
@@ -29,6 +39,7 @@ const App = ({ notify, create, getAll, update, loginUser, resetUser }) => {
         setSavedUser(loggedInUser);
       }
       fetchBlogs();
+      getUsers();
     }
     if (savedUser) {
       loginUser(savedUser);
@@ -182,15 +193,22 @@ const App = ({ notify, create, getAll, update, loginUser, resetUser }) => {
             Log out
           </button>
         </div>
-        <Toggle showText="Create blog ▼" hideText="Hide ▲">
-          <div className="my-3">{addBlogForm()}</div>
-        </Toggle>
-        <BlogListing
-          onUpdate={handleUpdateBlog}
-          onDelete={handleDeleteBlog}
-          blogs={blogs}
-          loggedInUser={loggedInUser}
-        />
+        <Switch>
+          <Route path="/users">
+            <UsersListing />
+          </Route>
+          <Route path="/">
+            <Toggle showText="Create blog ▼" hideText="Hide ▲">
+              <div className="my-3">{addBlogForm()}</div>
+            </Toggle>
+            <BlogListing
+              onUpdate={handleUpdateBlog}
+              onDelete={handleDeleteBlog}
+              blogs={blogs}
+              loggedInUser={loggedInUser}
+            />
+          </Route>
+        </Switch>
       </div>
     );
   };
@@ -269,5 +287,5 @@ const App = ({ notify, create, getAll, update, loginUser, resetUser }) => {
 
 export default connect(
   null,
-  { notify, create, update, getAll, loginUser, resetUser }
+  { notify, create, update, getAll, loginUser, resetUser, getUsers }
 )(App);
