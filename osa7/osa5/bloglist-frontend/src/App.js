@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Notifications from "react-notify-toast";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
@@ -7,9 +7,10 @@ import { useLocalStorage, useField } from "./hooks";
 import Toggle from "./App/Toggle";
 import BlogListing from "./App/BlogListing";
 import { notify } from "./reducers/notificationReducer";
-import { connect } from "react-redux";
+import { create, getAll, update } from "./reducers/blogServiceReducer";
+import { connect, useSelector } from "react-redux";
 
-const App = ({ notify }) => {
+const App = ({ notify, create, getAll, update, reduxBlogs }) => {
   const { set: setUserName, ...username } = useField("text");
   const { set: setPassword, ...password } = useField("password");
   const { set: setTitle, ...title } = useField("text");
@@ -17,7 +18,7 @@ const App = ({ notify }) => {
   const { set: setUrl, ...url } = useField("text");
   // fixed it and kept API the same 💪
 
-  const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector(state => state.blogs);
   const [user, setUser] = useLocalStorage("user", null);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ const App = ({ notify }) => {
   }, [blogs]);
 
   const fetchBlogs = () => {
-    blogService.getAll().then(initialBlogs => setBlogs(initialBlogs));
+    getAll();
   };
 
   const handleLogin = async event => {
@@ -60,17 +61,12 @@ const App = ({ notify }) => {
       return;
     }
     try {
-      // eslint-disable-next-line no-unused-vars
-      blogService
-        .create(
-          { title: title.value, author: author.value, url: url.value },
-          user.token
-        )
-        .then(newBlog => {
-          //TODO: update excisting blogs instead of refetch
-          notify("Blog added!", "success", 3000);
-          fetchBlogs();
-        });
+      create(
+        { title: title.value, author: author.value, url: url.value },
+        user.token
+      );
+      notify("Blog added!", "success", 3000);
+      fetchBlogs();
       setTitle("");
       setAuthor("");
       setUrl("");
@@ -82,15 +78,9 @@ const App = ({ notify }) => {
 
   const handleUpdateBlog = (id, blogToUpdate) => {
     try {
-      blogService
-        .update(id, blogToUpdate)
-        .then(({ author, id, likes, title, url }) => {
-          const newBlogs = blogs.map(blog =>
-            blog.id === id ? { ...blog, author, likes, title, url } : blog
-          );
-          setBlogs([...newBlogs]);
-          notify("Liked!", "success", 3000);
-        });
+      update(id, blogToUpdate);
+      fetchBlogs();
+      notify("update!", "success", 3000);
     } catch (error) {
       console.log("Error", error);
     }
@@ -99,8 +89,7 @@ const App = ({ notify }) => {
   const handleDeleteBlog = id => {
     try {
       blogService.deleteItem(id, user.token).then(() => {
-        const newBlogs = blogs.filter(blog => blog.id !== id);
-        setBlogs([...newBlogs]);
+        fetchBlogs();
         notify("Deleted blog", "error", 3000);
       });
     } catch (error) {
@@ -265,5 +254,5 @@ const App = ({ notify }) => {
 
 export default connect(
   null,
-  { notify }
+  { notify, create, update, getAll }
 )(App);
