@@ -14,7 +14,7 @@ export const SingleBlog = ({
   const [blogsWithExtras, setBlogWithExtras] = useState({});
   const { set: setNewComment, ...newComment } = useField("text");
 
-  const toggleConfirm = id => {
+  const toggleConfirm = () => {
     const newBlogWithExtras = {
       ...blogsWithExtras,
       confirm: !blogsWithExtras.confirm
