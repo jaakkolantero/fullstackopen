@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useField } from "../hooks";
 
 export const SingleBlog = ({
   blogs,
   loggedInUser,
   onUpdate,
   onDelete,
-  comments
+  comments,
+  onComment
 }) => {
   let { blogId } = useParams();
   const [blogsWithExtras, setBlogWithExtras] = useState({});
+  const { set: setNewComment, ...newComment } = useField("text");
 
   const toggleConfirm = id => {
     const newBlogWithExtras = {
@@ -17,6 +20,14 @@ export const SingleBlog = ({
       confirm: !blogsWithExtras.confirm
     };
     setBlogWithExtras(newBlogWithExtras);
+  };
+
+  const handleCommentSubmit = event => {
+    event.preventDefault();
+    if (newComment.value) {
+      onComment(newComment.value, blogsWithExtras.id);
+      setNewComment("");
+    }
   };
 
   useEffect(() => {
@@ -91,6 +102,19 @@ export const SingleBlog = ({
           Added by {user.name} aka {user.username}
         </div>
         <h2 className="text-gray-700 text-2xl">Comments</h2>
+        <form onSubmit={handleCommentSubmit}>
+          <input
+            className="rounded py-2 px-1 border border-gray-500"
+            {...newComment}
+            name="newComment"
+          ></input>
+          <button
+            type="submit"
+            className=" ml-3 rounded py-2 px-4 bg-blue-600 text-blue-200"
+          >
+            Add comment
+          </button>
+        </form>
         {usersComments.length ? (
           <ul>
             {usersComments.map(comment => (

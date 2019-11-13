@@ -10,7 +10,10 @@ import { notify } from "./reducers/notificationReducer";
 import { create, getAll, update } from "./reducers/blogServiceReducer";
 import { setUser as loginUser, resetUser } from "./reducers/userReducer";
 import { getAll as getUsers } from "./reducers/usersReducer";
-import { getComments } from "./reducers/commentsReducer";
+import {
+  getComments,
+  create as createComment
+} from "./reducers/commentsReducer";
 import { connect, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import UsersListing from "./App/UsersListing";
@@ -25,7 +28,8 @@ const App = ({
   loginUser,
   resetUser,
   getUsers,
-  getComments
+  getComments,
+  createComment
 }) => {
   const { set: setUserName, ...username } = useField("text");
   const { set: setPassword, ...password } = useField("password");
@@ -130,6 +134,10 @@ const App = ({
     }
   };
 
+  const handleComment = (text, id) => {
+    createComment(text, id, loggedInUser.token);
+  };
+
   const loginForm = () => {
     return (
       <div data-testid="loginform-container" className="w-full flex mt-32 ml-8">
@@ -211,6 +219,7 @@ const App = ({
               blogs={blogs}
               loggedInUser={loggedInUser}
               comments={comments}
+              onComment={handleComment}
             />
           </Route>
           <Route path="/">
@@ -312,6 +321,7 @@ export default connect(
     loginUser,
     resetUser,
     getUsers,
-    getComments
+    getComments,
+    createComment
   }
 )(App);

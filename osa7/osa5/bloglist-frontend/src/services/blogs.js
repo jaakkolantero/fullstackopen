@@ -35,4 +35,24 @@ const getComments = async () => {
   return (await axios.get(`${baseUrl}/comments`)).data;
 };
 
-export default { getAll, create, update, deleteItem, getComments };
+const createComment = async (newObject, id, token) => {
+  const config = {
+    headers: { Authorization: `bearer ${token}` }
+  };
+  console.log("newObject", newObject);
+  const response = await axios.post(
+    `${baseUrl}/${id}/comments`,
+    { text: newObject },
+    config
+  );
+  return response.data;
+};
+
+export default {
+  getAll,
+  create,
+  update,
+  deleteItem,
+  getComments,
+  createComment
+};
