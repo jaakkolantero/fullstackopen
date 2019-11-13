@@ -3,12 +3,32 @@ const jwt = require("jsonwebtoken");
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const Comment = require("../models/comment");
+
 const { withCatch } = require("../utils/withCatch");
 const { parseToken } = require("../utils/parseToken");
 
 blogsRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user");
   return response.json(blogs.map(blog => blog.toJSON()));
+});
+
+blogsRouter.get("/comments", async (request, response) => {
+  const comments = await Comment.find({});
+  return response.json(comments.map(comment => comment.toJSON()));
+});
+
+blogsRouter.post("/:id/comments", async (request, response) => {
+  const comment = new Comment({
+    text: request.body.text,
+    blogId: request.params.id
+  });
+  const [commentError, addedComment] = await withCatch(comment.save());
+  if (commentError) {
+    response.status(400).send({ error: commentError.message });
+  } else {
+    response.status(201).json(addedComment.toJSON());
+  }
 });
 
 blogsRouter.post("/", async (request, response) => {

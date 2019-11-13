@@ -4,16 +4,16 @@ export const getId = () => (100000 * Math.random()).toFixed(0);
 
 const reducer = (state = [], action) => {
   switch (action.type) {
-    case "GETALL":
-      return action.blogs;
-    case "UPDATE":
-      return state.map(item => {
-        return item.id !== action.id ? item : { ...item, ...action.blog };
-      });
-    case "CREATE":
-      return [...state, action.blog];
-    default:
-      return state;
+  case "GETALL":
+    return action.blogs;
+  case "UPDATE":
+    return state.map(item => {
+      return item.id !== action.id ? item : { ...item, ...action.blog };
+    });
+  case "CREATE":
+    return [...state, action.blog];
+  default:
+    return state;
   }
 };
 

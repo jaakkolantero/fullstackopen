@@ -10,6 +10,7 @@ import { notify } from "./reducers/notificationReducer";
 import { create, getAll, update } from "./reducers/blogServiceReducer";
 import { setUser as loginUser, resetUser } from "./reducers/userReducer";
 import { getAll as getUsers } from "./reducers/usersReducer";
+import { getComments } from "./reducers/commentsReducer";
 import { connect, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import UsersListing from "./App/UsersListing";
@@ -23,7 +24,8 @@ const App = ({
   update,
   loginUser,
   resetUser,
-  getUsers
+  getUsers,
+  getComments
 }) => {
   const { set: setUserName, ...username } = useField("text");
   const { set: setPassword, ...password } = useField("password");
@@ -34,6 +36,7 @@ const App = ({
   const blogs = useSelector(state => state.blogs);
   const [savedUser, setSavedUser] = useLocalStorage("user", null);
   const loggedInUser = useSelector(state => state.user);
+  const comments = useSelector(state => state.comments);
 
   useEffect(() => {
     if (loggedInUser) {
@@ -42,6 +45,7 @@ const App = ({
       }
       fetchBlogs();
       getUsers();
+      !comments.length && getComments();
     }
     if (savedUser) {
       loginUser(savedUser);
@@ -51,8 +55,9 @@ const App = ({
   useEffect(() => {}, [savedUser]);
 
   useEffect(() => {
-    console.log("blogs", blogs);
-  }, [blogs]);
+    blogs.length && console.log("blogs", blogs);
+    comments.length && console.log("comments", comments);
+  }, [blogs, comments]);
 
   const fetchBlogs = () => {
     getAll();
@@ -205,6 +210,7 @@ const App = ({
               onDelete={handleDeleteBlog}
               blogs={blogs}
               loggedInUser={loggedInUser}
+              comments={comments}
             />
           </Route>
           <Route path="/">
@@ -298,5 +304,14 @@ const App = ({
 
 export default connect(
   null,
-  { notify, create, update, getAll, loginUser, resetUser, getUsers }
+  {
+    notify,
+    create,
+    update,
+    getAll,
+    loginUser,
+    resetUser,
+    getUsers,
+    getComments
+  }
 )(App);

@@ -31,4 +31,8 @@ const deleteItem = async (id, token) => {
   return response.data;
 };
 
-export default { getAll, create, update, deleteItem };
+const getComments = async () => {
+  return (await axios.get(`${baseUrl}/comments`)).data;
+};
+
+export default { getAll, create, update, deleteItem, getComments };

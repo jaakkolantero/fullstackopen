@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-export const SingleBlog = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
+export const SingleBlog = ({
+  blogs,
+  loggedInUser,
+  onUpdate,
+  onDelete,
+  comments
+}) => {
   let { blogId } = useParams();
   const [blogsWithExtras, setBlogWithExtras] = useState({});
 
@@ -23,6 +29,7 @@ export const SingleBlog = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
 
   const additionalInfo = blog => {
     const { user, likes, author, title, url, id, confirm } = blog;
+    const usersComments = comments.filter(comments => comments.blogId === id);
     return (
       <div
         data-testid="bloglisting-additional"
@@ -83,6 +90,16 @@ export const SingleBlog = ({ blogs, loggedInUser, onUpdate, onDelete }) => {
         <div>
           Added by {user.name} aka {user.username}
         </div>
+        <h2 className="text-gray-700 text-2xl">Comments</h2>
+        {usersComments.length ? (
+          <ul>
+            {usersComments.map(comment => (
+              <li key={comment.id}>{comment.text}</li>
+            ))}
+          </ul>
+        ) : (
+          <div>no comments</div>
+        )}
       </div>
     );
   };
