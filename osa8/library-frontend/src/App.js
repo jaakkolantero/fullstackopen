@@ -16,6 +16,11 @@ const App = () => {
       born
       bookCount
     }
+    allBooks{
+      title
+      author
+      published
+	  }
   }`,
     query => request(API, query)
   );
@@ -29,7 +34,7 @@ const App = () => {
     return (
       <>
         <Authors show={page === "authors"} authors={data.allAuthors} />
-        <Books show={page === "books"} />
+        <Books show={page === "books"} books={data.allBooks} />
         <NewBook show={page === "add"} />
       </>
     );
