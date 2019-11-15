@@ -112,6 +112,7 @@ const typeDefs = gql`
       published: Int!
       genres: [String!]!
     ): Book
+    editAuthor(name: String!, setBornTo: Int!): Author
   }
 `;
 
@@ -136,15 +137,33 @@ const resolvers = {
   },
   Mutation: {
     addBook: (root, args) => {
-      if (books.find(p => p.title === args.title)) {
+      if (books.find(b => b.title === args.title)) {
         throw new UserInputError("title must be unique", {
           invalidArgs: args.title
         });
       }
-
-      const book = { ...args, id: uuid() };
-      books = books.concat(book);
-      return book;
+      const author = authors.find(a => a.name === args.author);
+      if (author) {
+        const book = { ...args, id: author.id };
+        books = books.concat(book);
+        return book;
+      } else {
+        const newAuthor = { name: args.author, born: null, id: uuid() };
+        authors = authors.concat(newAuthor);
+        const book = { ...args, id: newAuthor.id };
+        books = books.concat(book);
+        return book;
+      }
+    },
+    editAuthor: (root, args) => {
+      const oldAuthor = authors.find(a => a.name === args.name);
+      if (oldAuthor) {
+        const newAuthor = { ...oldAuthor, born: args.setBornTo };
+        authors = authors.map(a => (a.name === args.name ? newAuthor : a));
+        return newAuthor;
+      } else {
+        return null;
+      }
     }
   }
 };
