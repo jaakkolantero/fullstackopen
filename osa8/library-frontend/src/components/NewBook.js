@@ -1,32 +1,73 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from "react";
+import useSWR, { trigger } from "swr";
+import request from "graphql-request";
 
-const NewBook = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuhtor] = useState('')
-  const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
-  const [genres, setGenres] = useState([])
+const API = "http://localhost:4000/graphql";
 
-  if (!props.show) {
-    return null
+const NewBook = ({ show, onCreate }) => {
+  const [title, setTitle] = useState("");
+  const [author, setAuhtor] = useState("");
+  const [published, setPublished] = useState("");
+  const [genre, setGenre] = useState("");
+  const [genres, setGenres] = useState([]);
+
+  const [data, setData] = useState({});
+  const mutation = `mutation(
+      $title: String!
+      $author: String!
+      $published: Int!
+      $genres: [String!]!
+    ) {
+  addBook(
+    title: $title,
+    author: $author,
+    published: $published,
+    genres: $genres
+  ) {
+    title,
+    author
+  }
+}`;
+
+  useEffect(() => {
+    if (data) {
+    }
+  }, [data, onCreate]);
+
+  if (!show) {
+    return null;
   }
 
-  const submit = async (e) => {
-    e.preventDefault()
+  const resetFields = () => {
+    setTitle("");
+    setPublished("");
+    setAuhtor("");
+    setGenres([]);
+    setGenre("");
+  };
 
-    console.log('add book...')
-
-    setTitle('')
-    setPublished('')
-    setAuhtor('')
-    setGenres([])
-    setGenre('')
-  }
+  const submit = async e => {
+    e.preventDefault();
+    if (!title || !author || !published || !genres.length) {
+      console.log("error, missing data");
+    } else {
+      request(API, mutation, {
+        title,
+        author,
+        genres,
+        published: Number(published)
+      }).then(data => {
+        setData(data);
+        onCreate();
+        resetFields();
+      });
+    }
+  };
 
   const addGenre = () => {
-    setGenres(genres.concat(genre))
-    setGenre('')
-  }
+    setGenres(genres.concat(genre));
+    setGenre("");
+  };
 
   return (
     <div>
@@ -48,7 +89,7 @@ const NewBook = (props) => {
         <div>
           published
           <input
-            type='number'
+            type="number"
             value={published}
             onChange={({ target }) => setPublished(target.value)}
           />
@@ -58,15 +99,15 @@ const NewBook = (props) => {
             value={genre}
             onChange={({ target }) => setGenre(target.value)}
           />
-          <button onClick={addGenre} type="button">add genre</button>
+          <button onClick={addGenre} type="button">
+            add genre
+          </button>
         </div>
-        <div>
-          genres: {genres.join(' ')}
-        </div>
-        <button type='submit'>create book</button>
+        <div>genres: {genres.join(" ")}</div>
+        <button type="submit">create book</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default NewBook
+export default NewBook;

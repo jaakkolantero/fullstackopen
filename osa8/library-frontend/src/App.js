@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
-import useSWR from "swr";
+import useSWR, { trigger } from "swr";
 import { request } from "graphql-request";
 
 const API = "http://localhost:4000/graphql";
 
 const App = () => {
   const [page, setPage] = useState("authors");
-  const { data, error } = useSWR(
-    `{
+  const query = `{
     allAuthors {
       name
       born
@@ -21,21 +20,25 @@ const App = () => {
       author
       published
 	  }
-  }`,
-    query => request(API, query)
-  );
+  }`;
+  const { data, error } = useSWR(query, query => request(API, query));
 
   useEffect(() => {
-    console.log("authors", data);
+    console.log("data", data);
     console.log("error", error);
   }, [data, error]);
+
+  const handleBookCreate = () => {
+    console.log("Triggering");
+    trigger(query);
+  };
 
   const pages = () => {
     return (
       <>
         <Authors show={page === "authors"} authors={data.allAuthors} />
         <Books show={page === "books"} books={data.allBooks} />
-        <NewBook show={page === "add"} />
+        <NewBook show={page === "add"} onCreate={handleBookCreate} />
       </>
     );
   };
