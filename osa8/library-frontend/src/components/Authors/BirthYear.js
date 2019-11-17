@@ -1,7 +1,7 @@
 import React from "react";
 import { useField } from "../../hooks/useField";
 
-const BirthYear = ({ onUpdate }) => {
+const BirthYear = ({ onUpdate, names }) => {
   const { set: setName, ...name } = useField("text");
   const { set: setBorn, ...born } = useField("text");
   const handleSubmit = event => {
@@ -10,6 +10,11 @@ const BirthYear = ({ onUpdate }) => {
     setName("");
     setBorn("");
   };
+
+  const handleNameSelect = event => {
+    setName(event.target.value);
+  };
+
   return (
     <div>
       <h2>Set birthyear</h2>
@@ -17,7 +22,14 @@ const BirthYear = ({ onUpdate }) => {
       <form onSubmit={handleSubmit}>
         name:
         <br />
-        <input {...name} />
+        <select value={name.value} onChange={handleNameSelect}>
+          {names &&
+            names.map(name => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+        </select>
         <br />
         born:
         <br />

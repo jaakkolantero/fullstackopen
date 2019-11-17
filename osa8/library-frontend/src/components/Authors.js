@@ -25,7 +25,10 @@ const Authors = ({ show, authors, onUpdateBirthYear }) => {
           ))}
         </tbody>
       </table>
-      <BirthYear onUpdate={onUpdateBirthYear} />
+      <BirthYear
+        onUpdate={onUpdateBirthYear}
+        names={authors.map(a => a.name)}
+      />
     </div>
   ) : (
     <div>Loading authors..</div>
