@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import useSWR, { trigger } from "swr";
+import React, { useState } from "react";
 import request from "graphql-request";
 
 const API = "http://localhost:4000/graphql";
@@ -10,8 +9,6 @@ const NewBook = ({ show, onCreate }) => {
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
-
-  const [data, setData] = useState({});
   const mutation = `mutation(
       $title: String!
       $author: String!
@@ -28,11 +25,6 @@ const NewBook = ({ show, onCreate }) => {
     author
   }
 }`;
-
-  useEffect(() => {
-    if (data) {
-    }
-  }, [data, onCreate]);
 
   if (!show) {
     return null;
@@ -56,8 +48,7 @@ const NewBook = ({ show, onCreate }) => {
         author,
         genres,
         published: Number(published)
-      }).then(data => {
-        setData(data);
+      }).then(() => {
         onCreate();
         resetFields();
       });

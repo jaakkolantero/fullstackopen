@@ -1,9 +1,11 @@
 import React from "react";
+import BirthYear from "./Authors/BirthYear";
 
-const Authors = ({ show, authors }) => {
+const Authors = ({ show, authors, onUpdateBirthYear }) => {
   if (!show) {
     return null;
   }
+
   return authors ? (
     <div>
       <h2>authors</h2>
@@ -23,6 +25,7 @@ const Authors = ({ show, authors }) => {
           ))}
         </tbody>
       </table>
+      <BirthYear onUpdate={onUpdateBirthYear} />
     </div>
   ) : (
     <div>Loading authors..</div>

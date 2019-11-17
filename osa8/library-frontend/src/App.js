@@ -33,10 +33,34 @@ const App = () => {
     trigger(query);
   };
 
+  const handleUpdateBirthYear = (name, born) => {
+    const mutation = `mutation(
+      $name: String!
+      $setBornTo: Int!
+    ) {
+      editAuthor(
+        name: $name,
+        setBornTo: $setBornTo,
+      ) {
+        name,
+        born
+      }
+    }`;
+    request(API, mutation, {
+      name,
+      setBornTo: Number(born)
+    }).then(data => console.log("editAuthor", data));
+    trigger(query);
+  };
+
   const pages = () => {
     return (
       <>
-        <Authors show={page === "authors"} authors={data.allAuthors} />
+        <Authors
+          show={page === "authors"}
+          authors={data.allAuthors}
+          onUpdateBirthYear={handleUpdateBirthYear}
+        />
         <Books show={page === "books"} books={data.allBooks} />
         <NewBook show={page === "add"} onCreate={handleBookCreate} />
       </>
