@@ -84,8 +84,12 @@ const resolvers = {
       }
       const author = await Author.findOne({ name: args.author });
       if (author) {
-        const book = await new Book({ ...args, author }).save();
-        return { ...book.toObject(), author: author.toObject() };
+        try {
+          const book = await new Book({ ...args, author }).save();
+          return { ...book.toObject(), author: author.toObject() };
+        } catch (error) {
+          throw new UserInputError(error.message);
+        }
       } else {
         try {
           const newAuthor = await new Author({
@@ -98,7 +102,7 @@ const resolvers = {
           }).save();
           return { ...book.toObject(), author: { ...newAuthor.toObject() } };
         } catch (error) {
-          console.log("error", error);
+          throw new UserInputError(error.message);
         }
       }
     },
