@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const uuid = require("uuid/v1");
 const Author = require("./models/author");
 const Book = require("./models/book");
+const User = require("./models/user");
 
 mongoose.set("useFindAndModify", false);
 
@@ -21,6 +22,16 @@ mongoose
   });
 
 const typeDefs = gql`
+  type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Author {
     name: String!
     id: ID!
@@ -39,6 +50,7 @@ const typeDefs = gql`
     bookCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    me: User
   }
 
   type Mutation {
@@ -49,6 +61,8 @@ const typeDefs = gql`
       genres: [String!]!
     ): Book
     editAuthor(name: String!, setBornTo: Int!): Author
+    createUser(username: String!, favoriteGenre: String!): User
+    login(username: String!, password: String!): Token
   }
 `;
 
@@ -75,6 +89,20 @@ const resolvers = {
     }
   },
   Mutation: {
+    createUser: async (root, args) => {
+      const { username, favoriteGenre } = args;
+      if (await User.findOne({ username: args.username })) {
+        throw new UserInputError("username must be unique", {
+          invalidArgs: args.username
+        });
+      }
+      try {
+        const user = new User({ username, favoriteGenre });
+        return user.save();
+      } catch (error) {
+        throw new UserInputError(error.message);
+      }
+    },
     addBook: async (root, args) => {
       const books = await Book.findOne({ title: args.title });
       if (books) {
