@@ -3,7 +3,7 @@ import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import useSWR, { trigger } from "swr";
-import { request } from "graphql-request";
+import { request, GraphQLClient } from "graphql-request";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import LoginForm from "./components/LoginForm";
 
@@ -49,10 +49,15 @@ const App = () => {
         born
       }
     }`;
-    request(API, mutation, {
-      name,
-      setBornTo: Number(born)
-    }).then(data => console.log("editAuthor", data));
+    const client = new GraphQLClient(API, {
+      headers: { authorization: token ? `bearer ${token}` : null }
+    });
+    client
+      .request(mutation, {
+        name,
+        setBornTo: Number(born)
+      })
+      .then(data => console.log("editAuthor", data));
     trigger(query);
   };
 
@@ -65,7 +70,12 @@ const App = () => {
           onUpdateBirthYear={handleUpdateBirthYear}
         />
         <Books show={page === "books"} books={data.allBooks} />
-        <NewBook show={page === "add"} onCreate={handleBookCreate} />
+        <NewBook
+          show={page === "add"}
+          onCreate={handleBookCreate}
+          token={token}
+        />
+        {loginForm({ show: page === "login" })}
       </>
     );
   };
@@ -80,7 +90,11 @@ const App = () => {
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
         <button onClick={() => setPage("add")}>add book</button>
-        <button onClick={logout}>logout</button>
+        {token ? (
+          <button onClick={logout}>logout</button>
+        ) : (
+          <button onClick={() => setPage("login")}>login</button>
+        )}
       </div>
     );
   };
@@ -94,10 +108,18 @@ const App = () => {
     return await request(API, LOGIN, { username, password });
   };
 
-  const loginForm = () => {
+  const handleSetToken = newToken => {
+    setToken(newToken);
+    setPage("authors");
+  };
+
+  const loginForm = ({ show }) => {
+    if (!show) {
+      return null;
+    }
     return (
       <div>
-        <LoginForm login={login} setToken={token => setToken(token)} />
+        <LoginForm login={login} setToken={handleSetToken} />
       </div>
     );
   };
@@ -111,7 +133,7 @@ const App = () => {
     );
   };
 
-  return <div>{token ? content() : loginForm()}</div>;
+  return <div>{content()}</div>;
 };
 
 export default App;

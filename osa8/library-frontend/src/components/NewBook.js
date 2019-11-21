@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import request from "graphql-request";
+import request, { GraphQLClient } from "graphql-request";
 
 const API = "http://localhost:4000/graphql";
 
-const NewBook = ({ show, onCreate }) => {
+const NewBook = ({ show, onCreate, token }) => {
   const [title, setTitle] = useState("");
   const [author, setAuhtor] = useState("");
   const [published, setPublished] = useState("");
@@ -22,7 +22,7 @@ const NewBook = ({ show, onCreate }) => {
     genres: $genres
   ) {
     title,
-    author
+    author{name}
   }
 }`;
 
@@ -43,15 +43,20 @@ const NewBook = ({ show, onCreate }) => {
     if (!title || !author || !published || !genres.length) {
       console.log("error, missing data");
     } else {
-      request(API, mutation, {
-        title,
-        author,
-        genres,
-        published: Number(published)
-      }).then(() => {
-        onCreate();
-        resetFields();
+      const client = new GraphQLClient(API, {
+        headers: { authorization: token ? `bearer ${token}` : null }
       });
+      client
+        .request(mutation, {
+          title,
+          author,
+          genres,
+          published: Number(published)
+        })
+        .then(() => {
+          onCreate();
+          resetFields();
+        });
     }
   };
 
