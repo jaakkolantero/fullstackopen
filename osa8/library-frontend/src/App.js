@@ -4,11 +4,14 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import useSWR, { trigger } from "swr";
 import { request } from "graphql-request";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import LoginForm from "./components/LoginForm";
 
 const API = "http://localhost:4000/graphql";
 
 const App = () => {
   const [page, setPage] = useState("authors");
+  const [token, setToken] = useLocalStorage("library-user-token", null);
   const query = `{
     allAuthors {
       name
@@ -17,15 +20,15 @@ const App = () => {
     }
     allBooks{
       title
-      author
+      author {name}
       published
 	  }
   }`;
   const { data, error } = useSWR(query, query => request(API, query));
 
   useEffect(() => {
-    console.log("data", data);
-    console.log("error", error);
+    data && console.log("data", data);
+    error && console.log("error", error);
   }, [data, error]);
 
   const handleBookCreate = () => {
@@ -67,17 +70,48 @@ const App = () => {
     );
   };
 
-  return (
-    <div>
+  const logout = () => {
+    setToken(null);
+  };
+
+  const navigation = () => {
+    return (
       <div>
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
         <button onClick={() => setPage("add")}>add book</button>
+        <button onClick={logout}>logout</button>
       </div>
+    );
+  };
 
-      {data ? pages() : <div>Loading...</div>}
-    </div>
-  );
+  const login = async ({ username, password }) => {
+    const LOGIN = `mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password)  {
+      value
+    }
+  }`;
+    return await request(API, LOGIN, { username, password });
+  };
+
+  const loginForm = () => {
+    return (
+      <div>
+        <LoginForm login={login} setToken={token => setToken(token)} />
+      </div>
+    );
+  };
+
+  const content = () => {
+    return (
+      <div>
+        {navigation()}
+        {data ? pages() : <div>Loading...</div>}
+      </div>
+    );
+  };
+
+  return <div>{token ? content() : loginForm()}</div>;
 };
 
 export default App;
