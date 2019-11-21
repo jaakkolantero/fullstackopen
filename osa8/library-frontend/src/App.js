@@ -22,6 +22,7 @@ const App = () => {
       title
       author {name}
       published
+      genres
 	  }
   }`;
   const { data, error } = useSWR(query, query => request(API, query));
