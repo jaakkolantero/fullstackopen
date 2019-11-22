@@ -90,6 +90,7 @@ const resolvers = {
     },
     allAuthors: () => Author.find({}),
     me: (root, args, context) => {
+      console.log("context.currentUser", context.currentUser);
       return context.currentUser;
     }
   },

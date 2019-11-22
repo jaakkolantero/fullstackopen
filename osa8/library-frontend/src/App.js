@@ -6,12 +6,14 @@ import useSWR, { trigger } from "swr";
 import { request, GraphQLClient } from "graphql-request";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import LoginForm from "./components/LoginForm";
+import Recomended from "./components/Recomended";
 
 const API = "http://localhost:4000/graphql";
 
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useLocalStorage("library-user-token", null);
+  const [user, setUser] = useState(null);
   const query = `{
     allAuthors {
       name
@@ -31,6 +33,16 @@ const App = () => {
     data && console.log("data", data);
     error && console.log("error", error);
   }, [data, error]);
+
+  useEffect(() => {
+    if (token) {
+      const client = new GraphQLClient(API, {
+        headers: { authorization: token ? `bearer ${token}` : null }
+      });
+      const ME = `{me{username,favoriteGenre,id}}`;
+      client.request(ME).then(response => setUser(response));
+    }
+  }, [token]);
 
   const handleBookCreate = () => {
     console.log("Triggering");
@@ -76,6 +88,11 @@ const App = () => {
           onCreate={handleBookCreate}
           token={token}
         />
+        <Recomended
+          show={page === "recomended"}
+          user={user}
+          books={data.allBooks}
+        />
         {loginForm({ show: page === "login" })}
       </>
     );
@@ -92,7 +109,14 @@ const App = () => {
         <button onClick={() => setPage("books")}>books</button>
         <button onClick={() => setPage("add")}>add book</button>
         {token ? (
-          <button onClick={logout}>logout</button>
+          <div>
+            <button onClick={() => setPage("recomended")}>
+              <span role="img" aria-label="recomended">
+                💕
+              </span>
+            </button>
+            <button onClick={logout}>logout</button>
+          </div>
         ) : (
           <button onClick={() => setPage("login")}>login</button>
         )}

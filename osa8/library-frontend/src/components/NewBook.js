@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import request, { GraphQLClient } from "graphql-request";
+import { GraphQLClient } from "graphql-request";
 
 const API = "http://localhost:4000/graphql";
 
