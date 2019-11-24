@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const Recomended = ({ show, user, books }) => {
   const [favoriteBooks, setfavoriteBooks] = useState([]);
+
   React.useEffect(() => {
     if (books.length && user) {
-      console.log("user", user);
-      console.log("books", books);
       setfavoriteBooks(
         books.filter(book => book.genres.includes(user.me.favoriteGenre))
       );
     }
   }, [user, books]);
-
-  useEffect(() => {
-    console.log("favoriteBooks", favoriteBooks);
-  }, [favoriteBooks]);
 
   if (!show) {
     return null;

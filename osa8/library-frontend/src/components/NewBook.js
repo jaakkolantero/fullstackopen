@@ -53,8 +53,8 @@ const NewBook = ({ show, onCreate, token }) => {
           genres,
           published: Number(published)
         })
-        .then(() => {
-          onCreate();
+        .then(({ addBook }) => {
+          onCreate(addBook);
           resetFields();
         });
     }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
-import useSWR, { trigger } from "swr";
+import useSWR, { trigger, mutate } from "swr";
 import { request, GraphQLClient } from "graphql-request";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import LoginForm from "./components/LoginForm";
@@ -14,6 +14,8 @@ const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useLocalStorage("library-user-token", null);
   const [user, setUser] = useState(null);
+  const [editedAuthor, setEditedAuthor] = useState(null);
+  const params = React.useMemo(() => ({ ...editedAuthor }), [editedAuthor]);
   const query = `{
     allAuthors {
       name
@@ -27,12 +29,7 @@ const App = () => {
       genres
 	  }
   }`;
-  const { data, error } = useSWR(query, query => request(API, query));
-
-  useEffect(() => {
-    data && console.log("data", data);
-    error && console.log("error", error);
-  }, [data, error]);
+  const { data } = useSWR([query, params], query => request(API, query));
 
   useEffect(() => {
     if (token) {
@@ -44,8 +41,7 @@ const App = () => {
     }
   }, [token]);
 
-  const handleBookCreate = () => {
-    console.log("Triggering");
+  const handleBookCreate = newBook => {
     trigger(query);
   };
 
@@ -70,8 +66,15 @@ const App = () => {
         name,
         setBornTo: Number(born)
       })
-      .then(data => console.log("editAuthor", data));
-    trigger(query);
+      .then(({ editAuthor }) => {
+        mutate(query, {
+          ...data,
+          allAuthors: data.allAuthors.map(author =>
+            author.name === editAuthor.name ? editAuthor : author
+          )
+        });
+        setEditedAuthor(editAuthor);
+      });
   };
 
   const pages = () => {

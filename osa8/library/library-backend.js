@@ -82,7 +82,7 @@ const resolvers = {
       } else if (args.author) {
         return Book.find({});
       } else if (args.genre) {
-        return Book.find({ genres: { $in: [args.genre] } });
+        return Book.find({ genres: { $in: [args.genre] } }).populate("author");
       } else {
         const books = await Book.find().populate("author");
         return books;
@@ -162,11 +162,14 @@ const resolvers = {
       if (!currentUser) {
         throw new AuthenticationError("not authenticated");
       }
-      const author = await Author.findOne({ name: args.name });
-      author.born = args.setBornTo;
-      const updatedAuthor = await author.save();
-      if (updatedAuthor) {
-        return updatedAuthor;
+      const author = await Author.findOneAndUpdate(
+        { name: args.name },
+        { born: args.setBornTo },
+        { new: true }
+      );
+      console.log("author111", author);
+      if (author) {
+        return author;
       } else {
         return null;
       }
