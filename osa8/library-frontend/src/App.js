@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
-import useSWR, { trigger, mutate } from "swr";
+import useSWR, { mutate } from "swr";
 import { request, GraphQLClient } from "graphql-request";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import LoginForm from "./components/LoginForm";
@@ -14,8 +14,8 @@ const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useLocalStorage("library-user-token", null);
   const [user, setUser] = useState(null);
-  const [editedAuthor, setEditedAuthor] = useState(null);
-  const params = React.useMemo(() => ({ ...editedAuthor }), [editedAuthor]);
+  const [update, setUpdate] = useState(null);
+  const params = React.useMemo(() => ({ ...update }), [update]);
   const query = `{
     allAuthors {
       name
@@ -29,6 +29,22 @@ const App = () => {
       genres
 	  }
   }`;
+  const mutation = `mutation(
+      $title: String!
+      $author: String!
+      $published: Int!
+      $genres: [String!]!
+    ) {
+  addBook(
+    title: $title,
+    author: $author,
+    published: $published,
+    genres: $genres
+  ) {
+    title,
+    author{name}
+  }
+}`;
   const { data } = useSWR([query, params], query => request(API, query));
 
   useEffect(() => {
@@ -41,8 +57,13 @@ const App = () => {
     }
   }, [token]);
 
-  const handleBookCreate = newBook => {
-    trigger(query);
+  const handleBookCreate = async newBook => {
+    const client = new GraphQLClient(API, {
+      headers: { authorization: token ? `bearer ${token}` : null }
+    });
+    const { addBook } = await client.request(mutation, { ...newBook });
+    mutate(query, { ...data, allBooks: [...data.allBooks, addBook] });
+    setUpdate(newBook);
   };
 
   const handleUpdateBirthYear = (name, born) => {
@@ -73,7 +94,7 @@ const App = () => {
             author.name === editAuthor.name ? editAuthor : author
           )
         });
-        setEditedAuthor(editAuthor);
+        setUpdate(editAuthor);
       });
   };
 
